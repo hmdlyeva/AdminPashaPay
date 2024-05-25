@@ -1,113 +1,162 @@
-import Image from "next/image";
+import ActivitiesCard, { ActivitiesProps } from "@/components/ActivitiesCard";
+import BarChart from "@/components/BarChart";
+import Card, { CardContent, CardProps } from "@/components/Card";
+import CircleChart, { CircleProps } from "@/components/CircleChart";
+import Map from "@/components/Map";
+import PageTitle from "@/components/PageTitle";
+import WorkersValueChart from "@/components/WorkersValueChart";
+
+import {
+  DollarSign,
+  BriefcaseBusiness,
+  TrendingUp,
+  TrendingDown,
+  Lock,
+  Building2,
+} from "lucide-react";
+
+const cardData: CardProps[] = [
+  {
+    label: "Total Workers",
+    amount: "1200",
+    description: "+20.1% from last month",
+    icon: BriefcaseBusiness,
+  },
+  {
+    label: "Employment",
+    amount: "20",
+    description: "+14.3% from last month",
+    icon: TrendingUp,
+  },
+  {
+    label: "Resignation",
+    amount: "15",
+    description: "-10.9% from last month",
+    icon: TrendingDown,
+  },
+  {
+    label: "Locked",
+    amount: "9",
+    description: "+5.5% from last month",
+    icon: Lock,
+  },
+];
+
+const activityData: ActivitiesProps[] = [
+  {
+    name: "Olivia Martin",
+    email: "olivia.martin@email.com",
+    ActivityIcon: TrendingDown,
+  },
+  {
+    name: "Jackson Lee",
+    email: "jackson.lee@email.com",
+    ActivityIcon: TrendingUp,
+  },
+  {
+    name: "Isabella Nguyen",
+    email: "isabella.nguyen@email.com",
+    ActivityIcon: TrendingUp,
+  },
+  {
+    district: "Baku, Nizami street",
+    desc: "this is a description of the new building",
+    ActivityIcon: Building2,
+  },
+];
+
+const circleData: CircleProps[] = [
+  {
+    name: "WorkerAll",
+    value: 80,
+    color: "#0088FE",
+  },
+  {
+    name: "Resignated",
+    value: 6,
+    color: "#FF8042",
+  },
+  {
+    name: "Employed",
+    value: 14,
+    color: "#00C49F",
+  },
+];
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+    <div className="flex gap-5 w-full">
+      <div className="flex flex-col gap-5 w-full">
+        <PageTitle title="Dashboard" />
+        <section className="grid w-full grid-cols-1 gap-4 gap-x-8 transitin-all sm:grid-cols-2 xl:grid-cols-4">
+          {cardData.map((d, i) => (
+            <Card
+              key={i}
+              amount={d.amount}
+              description={d.description}
+              icon={d.icon}
+              label={d.label}
             />
-          </a>
+          ))}
+        </section>
+        <section className="grid grid-cols-1 gap-4 transition-all lg:grid-cols-2">
+          <CardContent>
+            <p className="p-4 font-semibold">Overview</p>
+            <BarChart />
+          </CardContent>
+
+          <CardContent className="flex justify-between gap-4">
+            <section>
+              <p>Recent Activities</p>
+              <p className="text-sm text-gray-400">
+                We made 75 activities this month
+              </p>
+            </section>
+            {activityData.map((d, i) => (
+              <ActivitiesCard
+                key={i}
+                ActivityIcon={d.ActivityIcon}
+                name={d.name}
+                email={d.email}
+                desc={d.desc}
+                district={d.district}
+              />
+            ))}
+          </CardContent>
+        </section>
+
+        <section className="grid grid-cols-1 gap-4 transition-all">
+          <CardContent className="grid w-full grid-cols-1 transitin-all  xl:grid-cols-2">
+            <div className="xl:border-r">
+              <p className="p-4 font-semibold">Percentage</p>
+              <div className="grid grid-cols-1 gap-2 transitin-all xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-3">
+                {circleData.map((d, i) => (
+                  <CircleChart
+                    key={i}
+                    name={d.name}
+                    value={d.value}
+                    color={d.color}
+                  />
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="p-4 font-semibold">Workers Value</p>
+              <WorkersValueChart />
+            </div>
+          </CardContent>
+        </section>
+      </div>
+
+      <div className="hidden 2xl:block">
+        <div style={{ position: "sticky", right: 0, top: 30 }}>
+          <section>
+            <CardContent>
+              <Map />
+            </CardContent>
+          </section>
         </div>
       </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    </div>
   );
 }

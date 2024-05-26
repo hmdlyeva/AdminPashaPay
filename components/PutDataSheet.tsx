@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import React, { useEffect, useState } from "react";
 import {
   Sheet,
@@ -55,7 +55,7 @@ export default function PutDataSheet({ id, pageName }: Props) {
         <SheetHeader>
           <SheetTitle>Edit {titlePageName}</SheetTitle>
           <SheetDescription>
-            Make changes to {pageName}'s data here.{" "}
+            Make changes to {pageName}&apos;s data here.{" "}
           </SheetDescription>
         </SheetHeader>
 

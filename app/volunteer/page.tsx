@@ -1,76 +1,45 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DataTable } from "@/components/DataTable";
 import { ColumnDef } from "@tanstack/react-table";
 import PageTitle from "@/components/PageTitle";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { Button } from "@/components/ui/button";
 import { UserRoundMinus } from "lucide-react";
-
+import type { RootState } from "../../redux/store/store";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  Volunteer,
+  delData,
+  getData,
+} from "@/redux/slice/volunteers/volunteers";
+import { AppDispatch } from "../../redux/store/store";
 type Props = {};
 
-export type Payment = {
-  id: string;
-  name: string;
-  createdAt: string;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
-};
-
-const data: Payment[] = [
-  {
-    id: "m5gr84i9",
-    name: "John Doe",
-    createdAt: "2024-01-01",
-    status: "pending",
-    email: "john@yahoo.com",
-  },
-  {
-    id: "3u1reuv4",
-    name: "Alice Smith",
-    createdAt: "2024-02-15",
-    status: "success",
-    email: "alice@gmail.com",
-  },
-  {
-    id: "derv1ws0",
-    name: "Bob Johnson",
-    createdAt: "2024-03-20",
-    status: "processing",
-    email: "bob@gmail.com",
-  },
-  {
-    id: "5kma53ae",
-    name: "Emma Brown",
-    createdAt: "2024-05-09",
-    status: "success",
-    email: "emma@gmail.com",
-  },
-  {
-    id: "bhqecj4p",
-    name: "Michael Davis",
-    createdAt: "2024-05-23",
-    status: "failed",
-    email: "michael@hotmail.com",
-  },
-
-  {
-    id: "n4hr37b6",
-    name: "Hensy Rock",
-    createdAt: "2024-05-24",
-    status: "success",
-    email: "hensy@gmail.com",
-  },
-];
-
 export default function VolunteerPage({}: Props) {
-  const [allData, setAllData] = useState<Payment[]>(data);
+  const volunteersData = useSelector(
+    (state: RootState) => state.volunteers.volunteers
+  );
+  const dispatch: AppDispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getData());
+  }, [dispatch]);
 
-  const handleDelete = (id: string) => {
-    setAllData((prevData) => prevData.filter((row) => row.id !== id));
+  useEffect(() => {
+    setAllData(volunteersData);
+  }, [volunteersData]);
+
+  console.log(volunteersData);
+
+  const [allData, setAllData] = useState<Volunteer[]>(volunteersData);
+
+  const handleDelete = (id: number) => {
+    dispatch(delData(id)).then(() => {
+      setAllData(volunteersData.filter((row) => row.id !== id));
+    });
   };
 
-  const columns: ColumnDef<Payment>[] = [
+  const columns: ColumnDef<Volunteer>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -115,32 +84,27 @@ export default function VolunteerPage({}: Props) {
       },
     },
     {
-      accessorKey: "email",
-      header: "Email",
+      accessorKey: "surname",
+      header: "Surname",
     },
     {
       accessorKey: "createdAt",
       header: "Created",
     },
     {
-      accessorKey: "status",
+      accessorKey: "formStatus",
       header: "Status",
       cell: ({ row }) => {
-        const status = row.getValue("status");
-        const colorClass =
-          status === "pending"
-            ? "text-blue-500 hover:bg-blue-100 bg-blue-100"
-            : status === "processing"
-            ? "text-yellow-500 hover:bg-yellow-100 bg-yellow-100"
-            : status === "success"
-            ? "text-green-600 hover:bg-green-100 bg-green-100"
-            : "text-red-600 hover:bg-red-100 bg-red-100";
+        const status = row.getValue("formStatus");
+        const colorClass = status
+          ? "text-green-600 hover:bg-green-100 bg-green-100"
+          : "text-red-600 hover:bg-red-100 bg-red-100";
 
         return (
           <Button
             className={`w-20 px-14 rounded-full bg-opacity-5 ${colorClass}`}
           >
-            {row.getValue("status")}
+            {status ? "Active" : "Inactive"}
           </Button>
         );
       },
@@ -158,7 +122,6 @@ export default function VolunteerPage({}: Props) {
       ),
     },
   ];
-
   return (
     <div className="flex flex-col gap-5 w-full">
       <PageTitle title="Volunteers" />

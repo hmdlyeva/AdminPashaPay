@@ -1,5 +1,4 @@
 "use client";
-
 import * as React from "react";
 import {
   ColumnDef,
@@ -19,8 +18,8 @@ import {
   ChevronLeft,
   ChevronRight,
   MoreHorizontal,
+  Plus,
 } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -41,8 +40,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import { useWindowWidth } from "@react-hook/window-size";
+import { DrawerVolunteer } from "./DrawerVolunteer";
 
 type DataTableProps<TData> = {
   columns: ColumnDef<TData>[];
@@ -61,11 +60,9 @@ export function DataTable<TData>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
   const table = useReactTable({
     data,
     columns,
@@ -87,17 +84,17 @@ export function DataTable<TData>({
 
   React.useEffect(() => {
     if (onlyWidth < 1000 && onlyWidth > 850) {
-      table.getColumn("status")?.toggleVisibility(false);
+      table.getColumn("formStatus")?.toggleVisibility(false);
     } else if (onlyWidth < 850 && onlyWidth > 750) {
       table.getColumn("createdAt")?.toggleVisibility(false);
     } else if (onlyWidth < 750 && onlyWidth > 600) {
-      table.getColumn("email")?.toggleVisibility(false);
+      table.getColumn("surname")?.toggleVisibility(false);
     } else if (onlyWidth < 600) {
       table.getColumn("delete")?.toggleVisibility(false);
     } else {
-      table.getColumn("status")?.toggleVisibility(true);
+      table.getColumn("formStatus")?.toggleVisibility(true);
       table.getColumn("createdAt")?.toggleVisibility(true);
-      table.getColumn("email")?.toggleVisibility(true);
+      table.getColumn("surname")?.toggleVisibility(true);
       table.getColumn("delete")?.toggleVisibility(true);
     }
   }, [onlyWidth, table]);
@@ -106,10 +103,10 @@ export function DataTable<TData>({
     <div className="w-full">
       <div className="flex items-center py-4 gap-2">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter name..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           style={{
             boxShadow: "2px 2px 1px rgba(20, 35, 75, 0.5)",
@@ -117,6 +114,9 @@ export function DataTable<TData>({
           }}
           className="max-w-sm text-ellipsis overflow-hidden"
         />
+
+        <DrawerVolunteer />
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -154,6 +154,7 @@ export function DataTable<TData>({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
       <div
         className="rounded-md border"
         style={{

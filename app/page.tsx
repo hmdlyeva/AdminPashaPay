@@ -1,3 +1,4 @@
+"use client";
 import ActivitiesCard, { ActivitiesProps } from "@/components/ActivitiesCard";
 import BarChart from "@/components/BarChart";
 import Card, { CardContent, CardProps } from "@/components/Card";
@@ -5,6 +6,7 @@ import CircleChart, { CircleProps } from "@/components/CircleChart";
 import Map from "@/components/Map";
 import PageTitle from "@/components/PageTitle";
 import WorkersValueChart from "@/components/WorkersValueChart";
+import axios from "axios";
 
 import {
   DollarSign,
@@ -14,6 +16,7 @@ import {
   Lock,
   Building2,
 } from "lucide-react";
+import { useEffect } from "react";
 
 const cardData: CardProps[] = [
   {
@@ -84,7 +87,7 @@ const circleData: CircleProps[] = [
 ];
 
 export default function Home() {
-  return (
+   return (
     <div className="flex gap-5 w-full">
       <div className="flex flex-col gap-5 w-full">
         <PageTitle title="Dashboard" />
@@ -156,6 +159,10 @@ export default function Home() {
             </CardContent>
           </section>
         </div>
+      </div>
+
+      <div>
+        <section></section>
       </div>
     </div>
   );

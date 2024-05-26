@@ -14,63 +14,23 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { VolunteerForm } from "./VolunteerForm";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { LocationForm } from "./LocationForm";
 
-const data = [
-  {
-    goal: 400,
-  },
-  {
-    goal: 300,
-  },
-  {
-    goal: 200,
-  },
-  {
-    goal: 300,
-  },
-  {
-    goal: 200,
-  },
-  {
-    goal: 278,
-  },
-  {
-    goal: 189,
-  },
-  {
-    goal: 239,
-  },
-  {
-    goal: 300,
-  },
-  {
-    goal: 200,
-  },
-  {
-    goal: 278,
-  },
-  {
-    goal: 189,
-  },
-  {
-    goal: 349,
-  },
-];
+type Props = {
+  pageName?: string;
+  title?: string;
+};
 
-export function DrawerVolunteer() {
-  const [goal, setGoal] = React.useState(350);
-
-  function onClick(adjustment: number) {
-    setGoal(Math.max(200, Math.min(400, goal + adjustment)));
-  }
-
+export function DrawerNewData({ pageName, title }: Props) {
+  console.log("DrawerNewData received pageName:", pageName);
+  console.log("DrawerNewData received title:", title);
   return (
     <Drawer>
       <DrawerTrigger asChild>
         <Button
           style={{
             boxShadow: "2px 2px 1px rgba(20, 35, 75, 0.5)",
+            display: pageName === "settings" ? "none" : "",
           }}
           variant="outline"
           className="ml-auto"
@@ -82,18 +42,21 @@ export function DrawerVolunteer() {
       <DrawerContent>
         <div className="mx-auto w-full max-w-sm">
           <DrawerHeader>
-            <DrawerTitle>Create New Volunteer</DrawerTitle>
+            <DrawerTitle>Create New {title}</DrawerTitle>
             <DrawerDescription>
-              post a new volunteer to the data.
+              post a new {title} to the data.
             </DrawerDescription>
           </DrawerHeader>
           <div className="p-4 pb-0">
-            {/* <ScrollArea className="h-72 w-96 border"> */}
-            <VolunteerForm />
-            {/* </ScrollArea> */}
+            {pageName === "volunteer" ? (
+              <VolunteerForm />
+            ) : pageName === "location" ? (
+              <LocationForm />
+            ) : (
+              ""
+            )}
           </div>
           <DrawerFooter>
-            {/* <Button>Submit</Button> */}
             <DrawerClose asChild>
               <Button variant="outline">Cancel</Button>
             </DrawerClose>

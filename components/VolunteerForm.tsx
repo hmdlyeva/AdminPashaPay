@@ -12,7 +12,8 @@ import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
-
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -75,6 +76,8 @@ const formSchema = z.object({
 });
 
 export function VolunteerForm() {
+  const { toast } = useToast();
+
   const dispatch = useDispatch<AppDispatch>();
   const [date, setDate] = React.useState<Date | undefined>(new Date());
 
@@ -96,7 +99,6 @@ export function VolunteerForm() {
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    
     console.log(data);
     const formattedData = {
       ...data,
@@ -116,13 +118,11 @@ export function VolunteerForm() {
     );
 
     toast({
-        title: "You submitted the following values:",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(formattedData, null, 2)}</code>
-          </pre>
-        ),
-      });
+      variant: "default",
+      title: "New Volunteer's data created successfully.",
+      description: "This volunteer will be better then others huh.",
+      action: <ToastAction altText="Creating">Creating</ToastAction>,
+    });
   }
 
   return (
@@ -302,7 +302,8 @@ export function VolunteerForm() {
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
+        <Button className="w-full" type="submit" 
+>
           Submit
         </Button>
       </form>

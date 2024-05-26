@@ -41,7 +41,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useWindowWidth } from "@react-hook/window-size";
-import { DrawerVolunteer } from "./DrawerVolunteer";
+import { DrawerNewData } from "./DrawerNewData";
+import { useEffect, useState } from "react";
 
 type DataTableProps<TData> = {
   columns: ColumnDef<TData>[];
@@ -54,6 +55,15 @@ export function DataTable<TData>({
   data,
   pageName,
 }: DataTableProps<TData>) {
+  const [titlePageName, setTitlePageName] = useState("");
+
+  useEffect(() => {
+    if (pageName) {
+      const formattedTitle = pageName[0].toUpperCase() + pageName.slice(1);
+      setTitlePageName(formattedTitle);
+    }
+  }, [pageName]);
+
   const onlyWidth = useWindowWidth();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -85,29 +95,59 @@ export function DataTable<TData>({
   React.useEffect(() => {
     if (onlyWidth < 1000 && onlyWidth > 850) {
       table.getColumn("formStatus")?.toggleVisibility(false);
+      table.getColumn("desc")?.toggleVisibility(false);
+
+      table.getColumn("createdAt")?.toggleVisibility(true);
+      table.getColumn("surname")?.toggleVisibility(true);
+
+      table.getColumn("subway")?.toggleVisibility(true);
+      table.getColumn("market")?.toggleVisibility(true);
+      table.getColumn("capacity")?.toggleVisibility(true);
+      table.getColumn("target")?.toggleVisibility(true);
     } else if (onlyWidth < 850 && onlyWidth > 750) {
       table.getColumn("createdAt")?.toggleVisibility(false);
+      table.getColumn("subway")?.toggleVisibility(false);
+
+      table.getColumn("market")?.toggleVisibility(true);
+      table.getColumn("capacity")?.toggleVisibility(true);
+      table.getColumn("target")?.toggleVisibility(true);
     } else if (onlyWidth < 750 && onlyWidth > 600) {
       table.getColumn("surname")?.toggleVisibility(false);
+      table.getColumn("market")?.toggleVisibility(false);
+      table.getColumn("capacity")?.toggleVisibility(false);
+
+      table.getColumn("target")?.toggleVisibility(true);
     } else if (onlyWidth < 600) {
-      table.getColumn("delete")?.toggleVisibility(false);
+      table.getColumn("target")?.toggleVisibility(false);
     } else {
       table.getColumn("formStatus")?.toggleVisibility(true);
       table.getColumn("createdAt")?.toggleVisibility(true);
       table.getColumn("surname")?.toggleVisibility(true);
       table.getColumn("delete")?.toggleVisibility(true);
+      table.getColumn("subway")?.toggleVisibility(true);
+      table.getColumn("market")?.toggleVisibility(true);
+      table.getColumn("capacity")?.toggleVisibility(true);
+      table.getColumn("target")?.toggleVisibility(true);
+      table.getColumn("desc")?.toggleVisibility(true);
     }
   }, [onlyWidth, table]);
 
+
+  console.log("DataTable rendered with titlePageName:", titlePageName);
   return (
     <div className="w-full">
       <div className="flex items-center py-4 gap-2">
         <Input
           placeholder="Filter name..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+          value={
+            (table.getColumn("name")?.getFilterValue() as string) ??
+            (table.getColumn("district")?.getFilterValue() as string)
           }
+          onChange={(event) => {
+            table.getColumn("name")
+              ? table.getColumn("name")?.setFilterValue(event.target.value)
+              : table.getColumn("district")?.setFilterValue(event.target.value);
+          }}
           style={{
             boxShadow: "2px 2px 1px rgba(20, 35, 75, 0.5)",
             display: pageName === "settings" ? "none" : "",
@@ -115,7 +155,7 @@ export function DataTable<TData>({
           className="max-w-sm text-ellipsis overflow-hidden"
         />
 
-        <DrawerVolunteer />
+        <DrawerNewData pageName={pageName} title={titlePageName} />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { UserRoundMinus } from "lucide-react";
 import type { RootState } from "../../redux/store/store";
 import { useSelector, useDispatch } from "react-redux";
+import { ToastAction } from "@/components/ui/toast"
+import { useToast } from "@/components/ui/use-toast"
 import {
   Volunteer,
   delData,
@@ -17,6 +19,8 @@ import { AppDispatch } from "../../redux/store/store";
 type Props = {};
 
 export default function VolunteerPage({}: Props) {
+  const { toast } = useToast()
+
   const volunteersData = useSelector(
     (state: RootState) => state.volunteers.volunteers
   );
@@ -115,7 +119,14 @@ export default function VolunteerPage({}: Props) {
       cell: ({ row }) => (
         <Button
           className="p-2 size-9 rounded-xl bg-opacity-40 bg-gray-100  hover:bg-red-100"
-          onClick={() => handleDelete(row.original.id)}
+          onClick={() =>  {
+            toast({
+              variant: "destructive",
+              title: "The Volunteer deleting!",
+              description: "Say goodbaye this data.",
+              action: <ToastAction altText="Deleting">Deleting</ToastAction>,
+            })
+            handleDelete(row.original.id)}}
         >
           <UserRoundMinus color={"#FF8F8F"} />
         </Button>
@@ -125,7 +136,7 @@ export default function VolunteerPage({}: Props) {
   return (
     <div className="flex flex-col gap-5 w-full">
       <PageTitle title="Volunteers" />
-      <DataTable columns={columns} data={allData} />
+      <DataTable columns={columns} data={allData} pageName="volunteer" />
     </div>
   );
 }

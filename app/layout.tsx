@@ -7,6 +7,8 @@ import SideNavbar from "@/components/SideNavbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { store } from "../redux/store/store";
 import { Provider } from "react-redux";
+import { Toaster } from "@/components/ui/toaster"
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,6 +42,7 @@ export default function RootLayout({
             <Provider store={store}>{children}</Provider>
           </div>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );

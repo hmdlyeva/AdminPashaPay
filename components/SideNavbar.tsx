@@ -2,21 +2,8 @@
 import React, { useState } from "react";
 import { Nav } from "./ui/nav";
 import {
-  AlertCircle,
-  Archive,
-  ArchiveX,
-  File,
-  Inbox,
-  MessagesSquare,
-  Search,
-  Send,
-  ShoppingCart,
-  Trash2,
-  Users2,
   SquareActivity,
   Settings2,
-  LucidePhoneCall,
-  LucideMoreVertical,
   MapPin,
   LogOut,
   UsersRound,

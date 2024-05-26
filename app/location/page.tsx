@@ -19,13 +19,14 @@ import { AppDispatch } from "../../redux/store/store";
 import PutDataSheet from "@/components/PutDataSheet";
 type Props = {};
 
-export default function locationPage({}: Props) {
+export default function LocationPage({}: Props) {
   const { toast } = useToast();
   const locationsData = useSelector(
     (state: RootState) => state.locations.locations
   );
   const dispatch: AppDispatch = useDispatch();
   const [selectedId, setSelectedId] = useState<number>(0);
+  const [allData, setAllData] = useState<Location[]>(locationsData);
 
   useEffect(() => {
     dispatch(getLocData());
@@ -34,8 +35,6 @@ export default function locationPage({}: Props) {
   useEffect(() => {
     setAllData(locationsData);
   }, [locationsData]);
-
-  const [allData, setAllData] = useState<Location[]>(locationsData);
 
   const handleDelete = (id: number) => {
     dispatch(delLocData(id)).then(() => {
@@ -131,7 +130,6 @@ export default function locationPage({}: Props) {
         );
       },
     },
-
     {
       accessorKey: "edit",
       header: "Edit",
@@ -144,7 +142,6 @@ export default function locationPage({}: Props) {
         </Button>
       ),
     },
-
     {
       accessorKey: "delete",
       header: "Remove",
@@ -169,7 +166,6 @@ export default function locationPage({}: Props) {
   return (
     <div className="flex flex-col gap-5 w-full">
       <PageTitle title="Locations" />
-
       <DataTable columns={columns} data={allData} pageName="location" />
     </div>
   );

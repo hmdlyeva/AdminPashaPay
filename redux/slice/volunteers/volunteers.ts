@@ -5,7 +5,7 @@ import axios from "axios";
 const token =
   "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjoiQURNSU4iLCJpYXQiOjE3MTY2NjA0OTAsImV4cCI6MTcxNjcyMDQ5MH0.m1uPUDxw9mSzfJGS8ooZ0--w4gdsc_eVzKDRQ-EwcbvePCylW7ZZ2SlhctGHrfH8nd8hcUgkxH5MyPIcsr0dMg";
 const baseURL =
-  "http://pashapay-423917.de.r.appspot.com/api/v1/admin/volunteer";
+  "https://pashapay-423917.de.r.appspot.com/api/v1/admin/volunteer";
 
 export const getData = createAsyncThunk("volunteers/getData", async () => {
   const response = await axios.get(baseURL, {

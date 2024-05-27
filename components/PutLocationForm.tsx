@@ -72,10 +72,10 @@ export function PutLocationForm({ datam, idim }: Props) {
         newp: formattedData,
       })
     );
-    toast({
-      title: "Success",
-      description: "Location data updated successfully",
-    });
+    // toast({
+    //   title: "Success",
+    //   description: "Location data updated successfully",
+    // });
   }
 
   return (

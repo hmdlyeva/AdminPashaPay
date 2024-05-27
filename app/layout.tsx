@@ -7,8 +7,8 @@ import SideNavbar from "@/components/SideNavbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { store } from "../redux/store/store";
 import { Provider } from "react-redux";
-import { Toaster } from "@/components/ui/toaster"
-
+import { Toaster } from "@/components/ui/toaster";
+import { useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,11 +22,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [token, setToken] = useState(localStorage.getItem("token"));
   return (
     <html lang="en">
       <body
         className={cn(
-          "min-h-screen w-full bg-white text-black flex",
+          "min-h-screen w-full bg-white text-black flex cursor",
           inter.className,
           { "debug-screens": process.env.NODE_ENV === "development" }
         )}
@@ -37,7 +38,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SideNavbar />
+          {token ? <SideNavbar /> : ""}
+
           <div className="p-8 w-full ">
             <Provider store={store}>{children}</Provider>
           </div>

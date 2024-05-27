@@ -22,8 +22,6 @@ type Props = {
 };
 
 export function DrawerNewData({ pageName, title }: Props) {
-  console.log("DrawerNewData received pageName:", pageName);
-  console.log("DrawerNewData received title:", title);
   return (
     <Drawer>
       <DrawerTrigger asChild>

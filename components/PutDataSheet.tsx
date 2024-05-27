@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import {
   Sheet,
@@ -17,13 +17,14 @@ import { getLocDataById, putLocData } from "@/redux/slice/locations/locations";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "./ui/use-toast";
 import { PutLocationForm } from "./PutLocationForm";
+import { PutVolunteerForm } from "./PutVolunteerForm";
+import { getDataById } from "@/redux/slice/volunteers/volunteers";
 type Props = {
-  id?: number | any;
+  id: number;
   pageName: string;
 };
 
 export default function PutDataSheet({ id, pageName }: Props) {
-  console.log(id);
   const [titlePageName, setTitlePageName] = useState("");
   useEffect(() => {
     if (pageName) {
@@ -33,12 +34,26 @@ export default function PutDataSheet({ id, pageName }: Props) {
   }, [pageName]);
 
   const dispatch: AppDispatch = useDispatch();
-  useEffect(() => {
-    dispatch(getLocDataById(id));
-  }, [dispatch, id]);
+  {
+    pageName === "location"
+      ? useEffect(() => {
+          if (id) {
+            dispatch(getLocDataById(id));
+          }
+        }, [dispatch, id])
+      : useEffect(() => {
+          if (id) {
+            dispatch(getDataById(id));
+          }
+        }, [dispatch, id]);
+  }
 
   const location = useSelector((state: RootState) =>
     state.locations.locations.find((loc) => loc.id === id)
+  );
+
+  const volunteer = useSelector((state: RootState) =>
+    state.volunteers.volunteers.find((vol) => vol.id === id)
   );
 
   return (
@@ -59,7 +74,11 @@ export default function PutDataSheet({ id, pageName }: Props) {
           </SheetDescription>
         </SheetHeader>
 
-        <PutLocationForm datam={location} idim={id}/>
+        {pageName === "location" ? (
+          <PutLocationForm datam={location} idim={id} />
+        ) : (
+          <PutVolunteerForm datam={volunteer} idim={id} />
+        )}
       </SheetContent>
     </Sheet>
   );

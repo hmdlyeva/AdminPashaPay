@@ -9,6 +9,7 @@ import {
   UsersRound,
   ChevronRight,
   ChevronLeft,
+  LogIn,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { useWindowWidth } from "@react-hook/window-size";

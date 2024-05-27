@@ -132,15 +132,13 @@ export function DataTable<TData>({
     }
   }, [onlyWidth, table]);
 
-
-  console.log("DataTable rendered with titlePageName:", titlePageName);
   return (
     <div className="w-full">
       <div className="flex items-center py-4 gap-2">
         <Input
           placeholder="Filter name..."
           value={
-            (table.getColumn("name")?.getFilterValue() as string) ??
+            table.getColumn("name")? (table.getColumn("name")?.getFilterValue() as string) :
             (table.getColumn("district")?.getFilterValue() as string)
           }
           onChange={(event) => {

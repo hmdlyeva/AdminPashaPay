@@ -36,8 +36,11 @@ import { Input } from "@/components/ui/input";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
-import { postData } from "@/redux/slice/volunteers/volunteers";
-
+import { postData, putData } from "@/redux/slice/volunteers/volunteers";
+type Props = {
+  datam: Location | any;
+  idim?: number | any;
+};
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "name must be at least 3 characters.",
@@ -60,10 +63,6 @@ const formSchema = z.object({
   address: z.string().min(2, {
     message: "address must be at least 3 characters.",
   }),
-  password: z.string().min(2, {
-    message: "username must be at least 2 characters.",
-  }),
-
   dateOfBirth: z.date({
     required_error: "A date of birth is required.",
   }),
@@ -75,54 +74,43 @@ const formSchema = z.object({
   }),
 });
 
-export function VolunteerForm() {
+export function PutVolunteerForm({ datam, idim }: Props) {
   const { toast } = useToast();
 
   const dispatch = useDispatch<AppDispatch>();
 
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      surname: "",
-      username: "",
-      phoneNumber: "",
-      finCode: "",
-      university: "",
-      address: "",
-      password: "",
-      dateOfBirth: new Date(),
-      dateOfEmployment: new Date(),
-      dateOfResignation: new Date(),
+      ...datam,
+      username: datam.user.username,
+      dateOfBirth: datam ? new Date(datam.dateOfBirth) : new Date(),
+      dateOfEmployment: datam ? new Date(datam.dateOfEmployment) : new Date(),
+      dateOfResignation: datam ? new Date(datam.dateOfResignation) : new Date(),
     },
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log(data);
     const formattedData = {
       ...data,
+      password: datam.password,
       dateOfBirth: format(data.dateOfBirth, "yyyy-MM-dd"),
       dateOfEmployment: format(data.dateOfEmployment, "yyyy-MM-dd"),
       dateOfResignation: format(data.dateOfResignation, "yyyy-MM-dd"),
+      formStatus:datam.formstatus,
     };
+    // console.log(formattedData);
 
-    console.log(formattedData);
     dispatch(
-      postData({
-        ...formattedData,
-        createdAt: new Date().toISOString(),
-        formStatus: true,
-        userId: 0,
+      putData({
+        id: idim,
+        newp: formattedData,
       })
     );
-
-    toast({
-      variant: "default",
-      title: "New Volunteer's data created successfully.",
-      description: "This volunteer will be better then others huh.",
-      action: <ToastAction altText="Creating">Creating</ToastAction>,
-    });
+    // toast({
+    //   title: "Success",
+    //   description: "Location data updated successfully",
+    // });
   }
 
   return (
@@ -136,7 +124,10 @@ export function VolunteerForm() {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="name" {...field} />
+                  <Input
+                    placeholder={datam ? `${datam.name}` : "name"}
+                    {...field}
+                  />
                 </FormControl>
 
                 <FormMessage />
@@ -150,7 +141,10 @@ export function VolunteerForm() {
               <FormItem>
                 <FormLabel>Surname</FormLabel>
                 <FormControl>
-                  <Input placeholder="surname" {...field} />
+                  <Input
+                    placeholder={datam ? `${datam.surname}` : "surname"}
+                    {...field}
+                  />
                 </FormControl>
 
                 <FormMessage />
@@ -166,7 +160,10 @@ export function VolunteerForm() {
               <FormItem>
                 <FormLabel>Username</FormLabel>
                 <FormControl>
-                  <Input placeholder="username" {...field} />
+                  <Input
+                    placeholder={datam ? `${datam.user.username}` : "username"}
+                    {...field}
+                  />
                 </FormControl>
 
                 <FormMessage />
@@ -180,7 +177,12 @@ export function VolunteerForm() {
               <FormItem>
                 <FormLabel>phone Number</FormLabel>
                 <FormControl>
-                  <Input placeholder="phone Number" {...field} />
+                  <Input
+                    placeholder={
+                      datam ? `${datam.phoneNumber}` : "phone number"
+                    }
+                    {...field}
+                  />
                 </FormControl>
 
                 <FormMessage />
@@ -196,6 +198,7 @@ export function VolunteerForm() {
             <FormItem>
               <FormLabel>FinCode</FormLabel>
               <InputOTP
+                placeholder={datam ? `${datam.finCode}` : ""}
                 value={field.value}
                 onChange={(newValue) => field.onChange(newValue)}
                 maxLength={7}
@@ -223,7 +226,10 @@ export function VolunteerForm() {
               <FormItem>
                 <FormLabel>University</FormLabel>
                 <FormControl>
-                  <Input placeholder="university" {...field} />
+                  <Input
+                    placeholder={datam ? `${datam.university}` : "university"}
+                    {...field}
+                  />
                 </FormControl>
 
                 <FormMessage />
@@ -237,7 +243,10 @@ export function VolunteerForm() {
               <FormItem>
                 <FormLabel>Address</FormLabel>
                 <FormControl>
-                  <Input placeholder="address" {...field} />
+                  <Input
+                    placeholder={datam ? `${datam.address}` : "address"}
+                    {...field}
+                  />
                 </FormControl>
 
                 <FormMessage />
@@ -274,6 +283,7 @@ export function VolunteerForm() {
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
+                    // defaultMonth={ datam ? `${datam.dateOfBirth}` : ""}
                     selected={field.value}
                     onSelect={field.onChange}
                     disabled={(date) =>
@@ -288,7 +298,7 @@ export function VolunteerForm() {
           )}
         />
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="password"
           render={({ field }) => (
@@ -301,9 +311,8 @@ export function VolunteerForm() {
               <FormMessage />
             </FormItem>
           )}
-        />
-        <Button className="w-full" type="submit" 
->
+        /> */}
+        <Button className="w-full" type="submit">
           Submit
         </Button>
       </form>

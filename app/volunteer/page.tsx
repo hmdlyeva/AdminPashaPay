@@ -8,19 +8,20 @@ import { Button } from "@/components/ui/button";
 import { UserRoundMinus } from "lucide-react";
 import type { RootState } from "../../redux/store/store";
 import { useSelector, useDispatch } from "react-redux";
-import { ToastAction } from "@/components/ui/toast"
-import { useToast } from "@/components/ui/use-toast"
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Volunteer,
   delData,
   getData,
 } from "@/redux/slice/volunteers/volunteers";
 import { AppDispatch } from "../../redux/store/store";
+import PutDataSheet from "@/components/PutDataSheet";
 type Props = {};
 
 export default function VolunteerPage({}: Props) {
-  const { toast } = useToast()
-
+  const { toast } = useToast();
+  const [selectedId, setSelectedId] = useState<number>(0);
   const volunteersData = useSelector(
     (state: RootState) => state.volunteers.volunteers
   );
@@ -31,9 +32,9 @@ export default function VolunteerPage({}: Props) {
 
   useEffect(() => {
     setAllData(volunteersData);
+    console.log(volunteersData);
   }, [volunteersData]);
 
-  console.log(volunteersData);
 
   const [allData, setAllData] = useState<Volunteer[]>(volunteersData);
 
@@ -42,31 +43,34 @@ export default function VolunteerPage({}: Props) {
       setAllData(volunteersData.filter((row) => row.id !== id));
     });
   };
+  const handleEditClick = (id: number) => {
+    setSelectedId(id);
+  };
 
   const columns: ColumnDef<Volunteer>[] = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          {...{
-            checked: table.getIsAllPageRowsSelected(),
-            indeterminate: table.getIsSomePageRowsSelected(),
-            onChange: table.getToggleAllPageRowsSelectedHandler(),
-          }}
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          {...{
-            checked: row.getIsSelected(),
-            disabled: !row.getCanSelect(),
-            onChange: row.getToggleSelectedHandler(),
-          }}
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
+    // {
+    //   id: "select",
+    //   header: ({ table }) => (
+    //     <Checkbox
+    //       {...{
+    //         checked: table.getIsAllPageRowsSelected(),
+    //         indeterminate: table.getIsSomePageRowsSelected(),
+    //         onChange: table.getToggleAllPageRowsSelectedHandler(),
+    //       }}
+    //     />
+    //   ),
+    //   cell: ({ row }) => (
+    //     <Checkbox
+    //       {...{
+    //         checked: row.getIsSelected(),
+    //         disabled: !row.getCanSelect(),
+    //         onChange: row.getToggleSelectedHandler(),
+    //       }}
+    //     />
+    //   ),
+    //   enableSorting: false,
+    //   enableHiding: false,
+    // },
     {
       accessorKey: "name",
       header: "User",
@@ -114,19 +118,32 @@ export default function VolunteerPage({}: Props) {
       },
     },
     {
+      accessorKey: "edit",
+      header: "Edit",
+      cell: ({ row }) => (
+        <Button
+          className="bg-transparent hover:bg-transparent"
+          onClick={() => handleEditClick(row.original.id)}
+        >
+          <PutDataSheet pageName="volunteer" id={selectedId} />
+        </Button>
+      ),
+    },
+    {
       accessorKey: "delete",
       header: "Remove",
       cell: ({ row }) => (
         <Button
           className="p-2 size-9 rounded-xl bg-opacity-40 bg-gray-100  hover:bg-red-100"
-          onClick={() =>  {
+          onClick={() => {
             toast({
               variant: "destructive",
               title: "The Volunteer deleting!",
               description: "Say goodbaye this data.",
               action: <ToastAction altText="Deleting">Deleting</ToastAction>,
-            })
-            handleDelete(row.original.id)}}
+            });
+            handleDelete(row.original.id);
+          }}
         >
           <UserRoundMinus color={"#FF8F8F"} />
         </Button>

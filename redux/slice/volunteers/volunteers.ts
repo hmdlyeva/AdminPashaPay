@@ -1,12 +1,15 @@
 import { toast } from "@/components/ui/use-toast";
+import { RootState } from "@/redux/store/store";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { useEffect } from "react";
 
 const baseURL = "https://45.95.214.69/api/v1/admin/volunteer";
 
-export const getData = createAsyncThunk("volunteers/getData", async () => {
-  const token = localStorage.getItem("token");
+
+export const getData = createAsyncThunk("volunteers/getData", async (_, { getState }) => {
+  const token = (getState() as RootState).volunteers.token;
   const response = await axios.get(baseURL, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -15,8 +18,8 @@ export const getData = createAsyncThunk("volunteers/getData", async () => {
 
 export const getDataById = createAsyncThunk(
   "volunteers/getDataById",
-  async (id: number) => {
-    const token = localStorage.getItem("token");
+  async (id: number, { getState }) => {
+    const token = (getState() as RootState).volunteers.token;
     const response = await axios.get(`${baseURL}/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -26,9 +29,9 @@ export const getDataById = createAsyncThunk(
 
 export const delData = createAsyncThunk(
   "volunteers/delData",
-  async (id: number) => {
+  async (id: number, { getState }) => {
     console.log("deleted id:" + id);
-    const token = localStorage.getItem("token");
+    const token = (getState() as RootState).volunteers.token;
     const response = await axios.delete(`${baseURL}/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -38,9 +41,9 @@ export const delData = createAsyncThunk(
 
 export const putData = createAsyncThunk(
   "volunteers/putData",
-  async ({ id, newp }: { id: number; newp: Partial<Volunteer> }) => {
+  async ({ id, newp }: { id: number; newp: Partial<Volunteer> }, { getState }) => {
     console.log(newp);
-    const token = localStorage.getItem("token");
+    const token = (getState() as RootState).volunteers.token;
     console.log("tokenim" + token);
     const response = await axios.put(`${baseURL}/${id}`, newp, {
       headers: {
@@ -55,9 +58,9 @@ export const putData = createAsyncThunk(
 
 export const postData = createAsyncThunk(
   "volunteers/postData",
-  async (newp: Partial<Volunteer>, { rejectWithValue }) => {
+  async (newp: Partial<Volunteer>, { rejectWithValue, getState },) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = (getState() as RootState).volunteers.token;
       const response = await axios.post(baseURL, newp, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -134,7 +137,7 @@ const initialState: VolunteerState = {
   },
   volunteers: [],
   loading: false,
-  token: localStorage.getItem("token") || "",
+  token: null,
 };
 
 export const volunteerSlice = createSlice({

@@ -16,8 +16,6 @@ import { useWindowWidth } from "@react-hook/window-size";
 type Props = {};
 
 export default function SideNavbar({}: Props) {
-  const [token, setToken] = useState(localStorage.getItem("token"));
-
   const [isCollapsed, setisCollapsed] = useState(false);
   const onlyWidth = useWindowWidth();
   const mobileWidth = onlyWidth < 1100;

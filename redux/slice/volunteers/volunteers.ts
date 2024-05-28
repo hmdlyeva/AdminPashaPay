@@ -6,7 +6,7 @@ import axios from "axios";
 const baseURL = "https://45.95.214.69/api/v1/admin/volunteer";
 
 export const getData = createAsyncThunk("volunteers/getData", async () => {
-  const token = localStorage.getItem("token");
+  const token = initialState.token;
   const response = await axios.get(baseURL, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -16,7 +16,7 @@ export const getData = createAsyncThunk("volunteers/getData", async () => {
 export const getDataById = createAsyncThunk(
   "volunteers/getDataById",
   async (id: number) => {
-    const token = localStorage.getItem("token");
+    const token = initialState.token;
     const response = await axios.get(`${baseURL}/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -28,7 +28,7 @@ export const delData = createAsyncThunk(
   "volunteers/delData",
   async (id: number) => {
     console.log("deleted id:" + id);
-    const token = localStorage.getItem("token");
+    const token = initialState.token;
     const response = await axios.delete(`${baseURL}/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -40,7 +40,7 @@ export const putData = createAsyncThunk(
   "volunteers/putData",
   async ({ id, newp }: { id: number; newp: Partial<Volunteer> }) => {
     console.log(newp);
-    const token = localStorage.getItem("token");
+    const token = initialState.token;
     console.log("tokenim" + token);
     const response = await axios.put(`${baseURL}/${id}`, newp, {
       headers: {
@@ -57,7 +57,7 @@ export const postData = createAsyncThunk(
   "volunteers/postData",
   async (newp: Partial<Volunteer>, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = initialState.token;
       const response = await axios.post(baseURL, newp, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -134,7 +134,7 @@ const initialState: VolunteerState = {
   },
   volunteers: [],
   loading: false,
-  token: localStorage.getItem("token") || "",
+  token: "",
 };
 
 export const volunteerSlice = createSlice({
@@ -143,11 +143,9 @@ export const volunteerSlice = createSlice({
   reducers: {
     setToken(state, action) {
       state.token = action.payload;
-      localStorage.setItem("token", action.payload);
     },
     clearToken(state) {
       state.token = null;
-      localStorage.removeItem("token");
     },
   },
   extraReducers: (builder) => {

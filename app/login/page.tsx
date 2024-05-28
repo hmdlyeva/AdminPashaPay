@@ -22,10 +22,11 @@ import { setToken } from "../../redux/slice/volunteers/volunteers";
 export default function SignIn() {
   const dispatch = useDispatch();
   const router = useRouter();
-  const token = useSelector((state: RootState) => state.volunteers.token);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
+    const storedToken = useSelector(
+      (state: RootState) => state.volunteers.token
+    );
     if (storedToken) {
       dispatch(setToken(storedToken));
       router.push("/dashboard");

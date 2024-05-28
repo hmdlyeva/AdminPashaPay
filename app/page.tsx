@@ -1,11 +1,9 @@
 "use client";
-import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useRouter } from 'next/navigation';
 import SignIn from "./login/page";
 import Dashboard from "./dashboard/page";
-import { RootState } from "../redux/store/store";
-import { setToken } from "../redux/slice/volunteers/volunteers";
+import {  RootState } from "../redux/store/store";
+
 
 export default function Home() {
  

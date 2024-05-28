@@ -47,29 +47,29 @@ export default function LocationPage({}: Props) {
   };
 
   const columns: ColumnDef<Location>[] = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          {...{
-            checked: table.getIsAllPageRowsSelected(),
-            indeterminate: table.getIsSomePageRowsSelected(),
-            onChange: table.getToggleAllPageRowsSelectedHandler(),
-          }}
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          {...{
-            checked: row.getIsSelected(),
-            disabled: !row.getCanSelect(),
-            onChange: row.getToggleSelectedHandler(),
-          }}
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
+    // {
+    //   id: "select",
+    //   header: ({ table }) => (
+    //     <Checkbox
+    //       {...{
+    //         checked: table.getIsAllPageRowsSelected(),
+    //         indeterminate: table.getIsSomePageRowsSelected(),
+    //         onChange: table.getToggleAllPageRowsSelectedHandler(),
+    //       }}
+    //     />
+    //   ),
+    //   cell: ({ row }) => (
+    //     <Checkbox
+    //       {...{
+    //         checked: row.getIsSelected(),
+    //         disabled: !row.getCanSelect(),
+    //         onChange: row.getToggleSelectedHandler(),
+    //       }}
+    //     />
+    //   ),
+    //   enableSorting: false,
+    //   enableHiding: false,
+    // },
     {
       accessorKey: "district",
       header: "District",

@@ -69,7 +69,7 @@ export default function SignIn({ onSignIn }: Props) {
           <TabsTrigger value="signin">Sign In</TabsTrigger>
         </TabsList>
         <TabsContent value="signin">
-          <Card>
+          <Card >
             <CardHeader>
               <CardTitle>Sign In</CardTitle>
               <CardDescription>
@@ -91,13 +91,14 @@ export default function SignIn({ onSignIn }: Props) {
                 <Input
                   onChange={(e) => setPassword(e.target.value)}
                   id="password"
+                  type="password"
                   required
                   placeholder="password"
                 />
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit">Sign In</Button>
+             <Button className="bg-[#00C49F] hover:bg-[#FF8042]" type="submit">Sign In</Button>
             </CardFooter>
           </Card>
         </TabsContent>

@@ -180,7 +180,7 @@ export function LocationForm() {
             )}
           />
         </div>
-        <Button className="w-full" type="submit">
+        <Button className="bg-[#00C49F] hover:bg-[#FF8042] w-full" type="submit">
           Submit
         </Button>
       </form>

@@ -34,19 +34,13 @@ export default function PutDataSheet({ id, pageName }: Props) {
   }, [pageName]);
 
   const dispatch: AppDispatch = useDispatch();
-  {
-    pageName === "location"
-      ? useEffect(() => {
-          if (id) {
-            dispatch(getLocDataById(id));
-          }
-        }, [dispatch, id])
-      : useEffect(() => {
-          if (id) {
-            dispatch(getDataById(id));
-          }
-        }, [dispatch, id]);
-  }
+  useEffect(() => {
+    if (pageName === "location" && id) {
+      dispatch(getLocDataById(id));
+    } else if (id) {
+      dispatch(getDataById(id));
+    }
+  }, [dispatch, id, pageName]);
 
   const location = useSelector((state: RootState) =>
     state.locations.locations.find((loc) => loc.id === id)

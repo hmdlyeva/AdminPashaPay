@@ -23,10 +23,10 @@ export default function SignIn() {
   const dispatch = useDispatch();
   const router = useRouter();
 
+  const storedToken = useSelector(
+    (state: RootState) => state.volunteers.token
+  );
   useEffect(() => {
-    const storedToken = useSelector(
-      (state: RootState) => state.volunteers.token
-    );
     if (storedToken) {
       dispatch(setToken(storedToken));
       router.push("/dashboard");

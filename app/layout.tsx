@@ -29,6 +29,10 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+      <link rel="icon" href="/images/m10.jpg" />
+      <title>Admin Panel</title>
+      </head>
       <body>
         <Provider store={store}>
           <AppLayout>{children}</AppLayout>

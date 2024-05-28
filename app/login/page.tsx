@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,12 +13,29 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { RootState } from "@/redux/store/store";
+import { setToken } from "../../redux/slice/volunteers/volunteers";
 
-type Props = {
-  onSignIn:any;
-};
 
-export default function SignIn({ onSignIn }: Props) {
+export default function SignIn() {
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const token = useSelector((state: RootState) => state.volunteers.token);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      dispatch(setToken(storedToken));
+      router.push("/dashboard");
+    }
+  }, [dispatch, router]);
+
+  const handleSignIn = (token: string) => {
+    dispatch(setToken(token));
+    router.push("/dashboard");
+  };
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
 
@@ -31,7 +48,7 @@ export default function SignIn({ onSignIn }: Props) {
           { username, password }
         );
         const token = signInResponse.data.accessToken;
-        onSignIn(token);
+        handleSignIn(token);
       } catch (error) {
         console.error("Sign in error:", error);
         alert(`Failed to sign in`);

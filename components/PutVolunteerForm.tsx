@@ -36,9 +36,13 @@ import { Input } from "@/components/ui/input";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
-import { postData, putData } from "@/redux/slice/volunteers/volunteers";
+import {
+  Volunteer,
+  postData,
+  putData,
+} from "@/redux/slice/volunteers/volunteers";
 type Props = {
-  datam: Location | any;
+  datam: Volunteer | any;
   idim?: number | any;
 };
 const formSchema = z.object({
@@ -77,6 +81,8 @@ const formSchema = z.object({
 export function PutVolunteerForm({ datam, idim }: Props) {
   const { toast } = useToast();
 
+  console.log(datam);
+
   const dispatch = useDispatch<AppDispatch>();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -89,28 +95,21 @@ export function PutVolunteerForm({ datam, idim }: Props) {
       dateOfResignation: datam ? new Date(datam.dateOfResignation) : new Date(),
     },
   });
-
   function onSubmit(data: z.infer<typeof formSchema>) {
     const formattedData = {
       ...data,
-      password: datam.password,
+      username: data.username,
       dateOfBirth: format(data.dateOfBirth, "yyyy-MM-dd"),
       dateOfEmployment: format(data.dateOfEmployment, "yyyy-MM-dd"),
       dateOfResignation: format(data.dateOfResignation, "yyyy-MM-dd"),
-      formStatus:datam.formstatus,
+      formStatus: datam.formStatus,
     };
-    // console.log(formattedData);
-
     dispatch(
       putData({
         id: idim,
         newp: formattedData,
       })
     );
-    // toast({
-    //   title: "Success",
-    //   description: "Location data updated successfully",
-    // });
   }
 
   return (

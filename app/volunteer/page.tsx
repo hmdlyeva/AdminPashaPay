@@ -26,25 +26,35 @@ export default function VolunteerPage({}: Props) {
     (state: RootState) => state.volunteers.volunteers
   );
   const dispatch: AppDispatch = useDispatch();
+
   useEffect(() => {
     dispatch(getData());
   }, [dispatch]);
 
+  const handleEditClick = (id: number) => {
+    setSelectedId(id);
+  };
+
+  const [updatedData, setVolunteersData] = useState<Volunteer[]>({
+    ...volunteersData,
+  });
+
   useEffect(() => {
-    setAllData(volunteersData);
-    console.log(volunteersData);
+    setVolunteersData(volunteersData);
   }, [volunteersData]);
-
-
-  const [allData, setAllData] = useState<Volunteer[]>(volunteersData);
 
   const handleDelete = (id: number) => {
     dispatch(delData(id)).then(() => {
-      setAllData(volunteersData.filter((row) => row.id !== id));
+      const updatedData = volunteersData.filter((row) => row.id !== id);
+      setVolunteersData(updatedData);
     });
-  };
-  const handleEditClick = (id: number) => {
-    setSelectedId(id);
+
+    toast({
+      variant: "destructive",
+      title: "The Volunteer deleting!",
+      description: "Say goodbye to this data.",
+      action: <ToastAction altText="Deleting">Deleting</ToastAction>,
+    });
   };
 
   const columns: ColumnDef<Volunteer>[] = [
@@ -136,13 +146,7 @@ export default function VolunteerPage({}: Props) {
         <Button
           className="p-2 size-9 rounded-xl bg-opacity-40 bg-gray-100  hover:bg-red-100"
           onClick={() => {
-            toast({
-              variant: "destructive",
-              title: "The Volunteer deleting!",
-              description: "Say goodbaye this data.",
-              action: <ToastAction altText="Deleting">Deleting</ToastAction>,
-            });
-            handleDelete(row.original.id);
+            handleDelete(row.original.id)
           }}
         >
           <UserRoundMinus color={"#FF8F8F"} />
@@ -153,7 +157,7 @@ export default function VolunteerPage({}: Props) {
   return (
     <div className="flex flex-col gap-5 w-full">
       <PageTitle title="Volunteers" />
-      <DataTable columns={columns} data={allData} pageName="volunteer" />
+      <DataTable columns={columns} data={updatedData} pageName="volunteer" />
     </div>
   );
 }

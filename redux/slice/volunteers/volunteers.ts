@@ -1,9 +1,9 @@
+import { toast } from "@/components/ui/use-toast";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const baseURL =
-  "https://pashapay-423917.de.r.appspot.com/api/v1/admin/volunteer";
+const baseURL = "https://45.95.214.69/api/v1/admin/volunteer";
 
 export const getData = createAsyncThunk("volunteers/getData", async () => {
   const token = localStorage.getItem("token");
@@ -15,7 +15,7 @@ export const getData = createAsyncThunk("volunteers/getData", async () => {
 
 export const getDataById = createAsyncThunk(
   "volunteers/getDataById",
-  async (id:number) => {
+  async (id: number) => {
     const token = localStorage.getItem("token");
     const response = await axios.get(`${baseURL}/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -27,7 +27,7 @@ export const getDataById = createAsyncThunk(
 export const delData = createAsyncThunk(
   "volunteers/delData",
   async (id: number) => {
-    console.log("deleted id:"+id)
+    console.log("deleted id:" + id);
     const token = localStorage.getItem("token");
     const response = await axios.delete(`${baseURL}/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -39,30 +39,52 @@ export const delData = createAsyncThunk(
 export const putData = createAsyncThunk(
   "volunteers/putData",
   async ({ id, newp }: { id: number; newp: Partial<Volunteer> }) => {
-    console.log(newp)
+    console.log(newp);
     const token = localStorage.getItem("token");
-    console.log("tokenim"+token)
+    console.log("tokenim" + token);
     const response = await axios.put(`${baseURL}/${id}`, newp, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json" 
-      }
+        "Content-Type": "application/json",
+      },
     });
-    console.log("responseee dataaa"+response.data)
+    console.log("responseee dataaa" + response.data);
     return response.data;
   }
 );
 
 export const postData = createAsyncThunk(
   "volunteers/postData",
-  async (newp : Partial<Volunteer>) => {
-    const token = localStorage.getItem("token");
-    const response = await axios.post(baseURL, newp, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
+  async (newp: Partial<Volunteer>, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(baseURL, newp, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log("my response post data", response.data);
+
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        console.log("Username already in use!");
+        toast({
+          variant: "destructive",
+          title: "This username already in use!",
+          description: "Please choose another one.",
+        });
+        return rejectWithValue(error.response?.data);
+      } else {
+        console.error("Error posting volunteer data");
+      }
+    }
   }
 );
+
+export interface User {
+  accountNonLocked: boolean;
+  enabled:boolean
+}
 
 export interface Volunteer {
   id: number;
@@ -79,6 +101,7 @@ export interface Volunteer {
   address: string;
   formStatus: boolean;
   userId: number;
+  user?: User;
 }
 
 export interface VolunteerState {
@@ -104,10 +127,14 @@ const initialState: VolunteerState = {
     address: "",
     formStatus: true,
     userId: 0,
+    user: {
+      accountNonLocked: true,
+      enabled:true
+    },
   },
   volunteers: [],
   loading: false,
-  token: localStorage.getItem("token") || null,
+  token: localStorage.getItem("token") || "",
 };
 
 export const volunteerSlice = createSlice({

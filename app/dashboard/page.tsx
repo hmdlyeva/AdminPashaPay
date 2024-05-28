@@ -13,76 +13,134 @@ import {
   Lock,
   Building2,
 } from "lucide-react";
+import type { AppDispatch, RootState } from "../../redux/store/store";
+import { useSelector, useDispatch } from "react-redux";
+import { Location, getLocData } from "@/redux/slice/locations/locations";
+import { useEffect,useState } from "react";
+import { getData } from "@/redux/slice/volunteers/volunteers";
 
-const cardData: CardProps[] = [
-  {
-    label: "Total Workers",
-    amount: "1200",
-    description: "+20.1% from last month",
-    icon: BriefcaseBusiness,
-  },
-  {
-    label: "Employment",
-    amount: "20",
-    description: "+14.3% from last month",
-    icon: TrendingUp,
-  },
-  {
-    label: "Resignation",
-    amount: "15",
-    description: "-10.9% from last month",
-    icon: TrendingDown,
-  },
-  {
-    label: "Locked",
-    amount: "9",
-    description: "+5.5% from last month",
-    icon: Lock,
-  },
-];
-
-const activityData: ActivitiesProps[] = [
-  {
-    name: "Olivia Martin",
-    email: "olivia.martin@email.com",
-    ActivityIcon: TrendingDown,
-  },
-  {
-    name: "Jackson Lee",
-    email: "jackson.lee@email.com",
-    ActivityIcon: TrendingUp,
-  },
-  {
-    name: "Isabella Nguyen",
-    email: "isabella.nguyen@email.com",
-    ActivityIcon: TrendingUp,
-  },
-  {
-    district: "Baku, Nizami street",
-    desc: "this is a description of the new building",
-    ActivityIcon: Building2,
-  },
-];
-
-const circleData: CircleProps[] = [
-  {
-    name: "WorkerAll",
-    value: 80,
-    color: "#0088FE",
-  },
-  {
-    name: "Resignated",
-    value: 6,
-    color: "#FF8042",
-  },
-  {
-    name: "Employed",
-    value: 14,
-    color: "#00C49F",
-  },
-];
 
 export default function Dashboard() {
+  const locationsData = useSelector(
+    (state: RootState) => state.locations.locations
+  );
+  const volunteersData = useSelector(
+    (state: RootState) => state.volunteers.volunteers
+  );
+  const dispatch: AppDispatch = useDispatch();
+  const [recentActivities, setRecentActivities] = useState<ActivitiesProps[]>([]);
+
+  useEffect(() => {
+    dispatch(getLocData());
+    dispatch(getData());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (locationsData.length > 0 || volunteersData.length > 0) {
+      const latestLocation = locationsData[locationsData.length - 1];
+      const latestLocationActivity = {
+        type: "location",
+        target: latestLocation.target,
+        desc: latestLocation.desc,
+        district: latestLocation.district,
+        ActivityIcon: Building2,
+      };
+      const combinedData = [
+        ...volunteersData.map((volunteer) => ({
+          type: "volunteer",
+          createdAt: volunteer.createdAt,
+          name: `${volunteer.name} ${volunteer.surname}`,
+          phoneNumber: volunteer.phoneNumber,
+          ActivityIcon: TrendingUp,
+        })),
+       
+      ];
+
+      const sortedData = combinedData.sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      const recentVolunteersActivities = sortedData.slice(0, 4);
+
+      setRecentActivities([latestLocationActivity, ...recentVolunteersActivities]);
+    }
+  }, [locationsData, volunteersData]);
+
+  const TotalWorkers = volunteersData.length;
+  const TotalCapacity = locationsData.reduce(
+    (total, location) => total + location.capacity,
+    0
+  );
+  const LockedWorkersCount = volunteersData.filter(
+    (volunteer) => volunteer.user && volunteer.user.accountNonLocked === false
+  ).length;
+
+  const EmployedWorkersCount = volunteersData.filter(
+    (volunteer) => volunteer.user && volunteer.user.enabled
+  ).length;
+
+  const ResignatedWorkersCount = volunteersData.filter(
+    (volunteer) => volunteer.dateOfResignation
+  ).length;
+
+  const WorkersPercentageOfCapacity = TotalCapacity
+    ? Math.round((TotalWorkers / TotalCapacity) * 100)
+    : 0;
+
+  const ResignatedWorkersPercentageOfCapacity = TotalCapacity
+    ? Math.round((ResignatedWorkersCount / TotalCapacity) * 100)
+    : 0;
+
+  const EmployedWorkersPercentageOfCapacity = TotalCapacity
+    ? Math.round((EmployedWorkersCount / TotalCapacity) * 100)
+    : 0;
+
+  const circleData: CircleProps[] = [
+    {
+      name: "WorkerAll",
+      value: WorkersPercentageOfCapacity,
+      color: "#0088FE",
+    },
+    {
+      name: "Resignated",
+      value: 0,
+      color: "#FF8042",
+    },
+    {
+      name: "Employed",
+      value: EmployedWorkersPercentageOfCapacity,
+      color: "#00C49F",
+    },
+  ];
+
+  const cardData: CardProps[] = [
+    {
+      label: "Total Capacity",
+      amount: `${TotalCapacity}`,
+      description: "+20.1% from last month",
+      icon: Building2,
+    },
+    {
+      label: "Employment",
+      amount: `${TotalWorkers}`,
+      description: "+14.3% from last month",
+      icon: TrendingUp,
+    },
+    {
+      label: "Resignation",
+      amount: "0",
+      description: "-10.9% from last month",
+      icon: TrendingDown,
+    },
+    {
+      label: "Locked",
+      amount: `${LockedWorkersCount}`,
+      description: "±0% from last month",
+      icon: Lock,
+    },
+  ];
+
+
   return (
     <div className="flex gap-5 w-full">
       <div className="flex flex-col gap-5 w-full">
@@ -111,14 +169,17 @@ export default function Dashboard() {
                 We made 75 activities this month
               </p>
             </section>
-            {activityData.map((d, i) => (
+            {recentActivities.map((recentActivity, i) => (
               <ActivitiesCard
-                key={i}
-                ActivityIcon={d.ActivityIcon}
-                name={d.name}
-                email={d.email}
-                desc={d.desc}
-                district={d.district}
+              key={i}
+                ActivityIcon={recentActivity.ActivityIcon}
+                name={recentActivity.name}
+                phoneNumber={recentActivity.phoneNumber}
+                desc={recentActivity.desc}
+                district={recentActivity.district}
+                target={recentActivity.target}
+
+
               />
             ))}
           </CardContent>

@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,8 @@ export default function SignIn({ onSignIn }: Props) {
     if (username === "admin" && password === "admin") {
       try {
         const signInResponse = await axios.post(
-          "https://pashapay-423917.de.r.appspot.com/api/v1/auth/sign-in",
+          "https://45.95.214.69/api/v1/auth/sign-in",
+
           {
             username,
             password,
@@ -34,7 +36,7 @@ export default function SignIn({ onSignIn }: Props) {
         const tokenn = signInResponse.data.accessToken;
 
         // const refreshTokenResponse = await axios.post(
-        //   "https://pashapay-423917.de.r.appspot.com/api/v1/auth/refresh-token",
+        //   "  https://45.95.214.69/api/v1/auth/refresh-token",
         //   {
         //     tokenn,
         //   }

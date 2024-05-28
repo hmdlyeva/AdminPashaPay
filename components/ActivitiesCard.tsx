@@ -3,10 +3,11 @@ import React from "react";
 
 export type ActivitiesProps = {
   name?: string;
-  email?: string;
+  phoneNumber?: string;
   district?: string;
   desc?: string;
   ActivityIcon: LucideIcon;
+  target?: string;
 };
 
 export default function ActivitiesCard(props: ActivitiesProps) {
@@ -19,7 +20,7 @@ export default function ActivitiesCard(props: ActivitiesProps) {
             height={200}
             style={{ objectFit: "cover" }}
             src={
-              props.email
+              props.phoneNumber
                 ? `https://api.dicebear.com/8.x/lorelei/svg?seed=${props.name}`
                 : `https://api.dicebear.com/8.x/thumbs/svg?seed=Patches`
             }
@@ -29,7 +30,7 @@ export default function ActivitiesCard(props: ActivitiesProps) {
         <div className="text-sm">
           <p>{props.name ? props.name : props.district}</p>
           <div className="text-ellipsis overflow-hidden whitespace-nowrap w-[120px] sm:w-auto text-gray-400">
-            {props.email ? props.email : props.desc}
+            {props.phoneNumber ? props.phoneNumber : props.desc}
           </div>
         </div>
       </section>

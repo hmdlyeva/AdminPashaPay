@@ -16,6 +16,8 @@ import { useWindowWidth } from "@react-hook/window-size";
 type Props = {};
 
 export default function SideNavbar({}: Props) {
+  const [token, setToken] = useState(localStorage.getItem("token"));
+
   const [isCollapsed, setisCollapsed] = useState(false);
   const onlyWidth = useWindowWidth();
   const mobileWidth = onlyWidth < 1100;
@@ -24,7 +26,8 @@ export default function SideNavbar({}: Props) {
   }
 
   return (
-    <div className="relative min-w-[80px] border-r px-3 pb-10 pt-24">
+    <div
+      className="relative min-w-[80px] border-r px-3 pb-10 pt-24">
       {!mobileWidth && (
         <div className="absolute right-[-20px] top-7">
           <Button
@@ -36,6 +39,7 @@ export default function SideNavbar({}: Props) {
           </Button>
         </div>
       )}
+
       <Nav
         isCollapsed={mobileWidth ? true : isCollapsed}
         links={[

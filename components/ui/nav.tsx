@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { LucideIcon } from "lucide-react";
-
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { usePathname } from "next/navigation";
+import { clearToken } from "@/redux/slice/volunteers/volunteers";
 interface NavProps {
   isCollapsed: boolean;
   links: {
@@ -25,6 +27,14 @@ interface NavProps {
 
 export function Nav({ links, isCollapsed }: NavProps) {
   const pathName = usePathname();
+  const router = useRouter();
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(clearToken());
+    localStorage.removeItem("token");
+    router.push("/");
+  };
   return (
     <TooltipProvider>
       <div
@@ -33,7 +43,84 @@ export function Nav({ links, isCollapsed }: NavProps) {
       >
         <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
           {links.map((link, index) =>
-            isCollapsed ? (
+            link.title === "Log Out" ? (
+              isCollapsed ? (
+                <Tooltip key={index} delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <Button
+                      onClick={handleLogout}
+                      className={cn(
+                        buttonVariants({
+                          variant: link.href === pathName ? "default" : "ghost",
+                          size: "icon",
+                        }),
+                        "h-9 w-9",
+                        link.variant === "default" &&
+                          "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
+                      )}
+                      style={{
+                        backgroundColor:
+                          link.href === pathName ? "#FF7B5F" : "#00DBC8",
+                        boxShadow:
+                          link.href === pathName
+                            ? "2px 2px 1px rgba(20, 35, 75, 1)"
+                            : "none",
+                      }}
+                    >
+                      <link.icon className="h-4 w-4" />
+                      <span className="sr-only">{link.title}</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="right"
+                    className="flex items-center gap-4"
+                  >
+                    {link.title}
+                    {link.label && (
+                      <span className="ml-auto text-muted-foreground">
+                        {link.label}
+                      </span>
+                    )}
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <Button
+                  key={index}
+                  onClick={handleLogout}
+                  className={cn(
+                    buttonVariants({
+                      variant: link.href === pathName ? "default" : "ghost",
+                      size: "sm",
+                    }),
+                    link.variant === "default" &&
+                      "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white",
+                    "justify-start"
+                  )}
+                  style={{
+                    backgroundColor:
+                      link.href === pathName ? "#FF7B5F" : "#00DBC8",
+                    boxShadow:
+                      link.href === pathName
+                        ? "2px 2px 1px rgba(20, 35, 75, 1)"
+                        : "none",
+                  }}
+                >
+                  <link.icon className="mr-2 h-4 w-4" />
+                  {link.title}
+                  {link.label && (
+                    <span
+                      className={cn(
+                        "ml-auto",
+                        link.variant === "default" &&
+                          "text-background dark:text-white"
+                      )}
+                    >
+                      {link.label}
+                    </span>
+                  )}
+                </Button>
+              )
+            ) : isCollapsed ? (
               <Tooltip key={index} delayDuration={0}>
                 <TooltipTrigger asChild>
                   <Link

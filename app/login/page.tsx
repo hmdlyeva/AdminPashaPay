@@ -13,49 +13,28 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 type Props = {
-  onSignIn: (token: string) => void;
+  onSignIn:any;
 };
 
 export default function SignIn({ onSignIn }: Props) {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (event: any) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (username === "admin" && password === "admin") {
       try {
         const signInResponse = await axios.post(
           "https://45.95.214.69/api/v1/auth/sign-in",
-
-          {
-            username,
-            password,
-          }
+          { username, password }
         );
-        const tokenn = signInResponse.data.accessToken;
-
-        // const refreshTokenResponse = await axios.post(
-        //   "  https://45.95.214.69/api/v1/auth/refresh-token",
-        //   {
-        //     tokenn,
-        //   }
-        // );
-        // console.log(refreshTokenResponse);
-        // const refreshToken = refreshTokenResponse.data.refreshToken;
-
-        onSignIn(tokenn);
+        const token = signInResponse.data.accessToken;
+        onSignIn(token);
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error("Axios error response:", error.response);
-          alert(
-            `Failed to sign in: ${
-              error.response?.data?.message || error.message
-            }`
-          );
-        } else {
-          alert("Failed to sign in");
-        }
+        console.error("Sign in error:", error);
+        alert(`Failed to sign in`);
       }
     } else {
       alert("Incorrect username or password");
@@ -69,7 +48,7 @@ export default function SignIn({ onSignIn }: Props) {
           <TabsTrigger value="signin">Sign In</TabsTrigger>
         </TabsList>
         <TabsContent value="signin">
-          <Card >
+          <Card>
             <CardHeader>
               <CardTitle>Sign In</CardTitle>
               <CardDescription>
@@ -93,12 +72,14 @@ export default function SignIn({ onSignIn }: Props) {
                   id="password"
                   type="password"
                   required
-                  placeholder="password"
+                  placeholder="Password"
                 />
               </div>
             </CardContent>
             <CardFooter>
-             <Button className="bg-[#00C49F] hover:bg-[#FF8042]" type="submit">Sign In</Button>
+              <Button className="bg-[#00C49F] hover:bg-[#FF8042]" type="submit">
+                Sign In
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>
@@ -106,3 +87,4 @@ export default function SignIn({ onSignIn }: Props) {
     </form>
   );
 }
+

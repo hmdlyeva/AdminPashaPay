@@ -44,14 +44,14 @@ export const putData = createAsyncThunk(
   async ({ id, newp }: { id: number; newp: Partial<Volunteer> }, { getState }) => {
     console.log(newp);
     const token = (getState() as RootState).volunteers.token;
-    console.log("tokenim" + token);
+    // console.log("tokenim" + token);
     const response = await axios.put(`${baseURL}/${id}`, newp, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
-    console.log("responseee dataaa" + response.data);
+    console.log("responseee dataaa: " + response.data);
     return response.data;
   }
 );
@@ -93,8 +93,8 @@ export interface Volunteer {
   id: number;
   name: string;
   surname: string;
+  username:string;
   password: string;
-  createdAt: string;
   finCode: string;
   phoneNumber: string;
   dateOfBirth: string;
@@ -103,8 +103,11 @@ export interface Volunteer {
   university: string;
   address: string;
   formStatus: boolean;
-  userId: number;
-  user?: User;
+  teamLeaderId:number;
+
+  createdAt: string;
+  // userId: number;
+  // user?: User;
 }
 
 export interface VolunteerState {
@@ -119,21 +122,23 @@ const initialState: VolunteerState = {
     id: 0,
     name: "",
     surname: "",
+    username:"",
     password: "",
-    createdAt: "2024-05-25",
+    createdAt: "",
     finCode: "",
     phoneNumber: "",
-    dateOfBirth: "2024-05-25",
-    dateOfEmployment: "2024-05-25",
-    dateOfResignation: "2024-05-25",
+    dateOfBirth: "",
+    dateOfEmployment: "",
+    dateOfResignation: "",
     university: "",
     address: "",
     formStatus: true,
-    userId: 0,
-    user: {
-      accountNonLocked: true,
-      enabled:true
-    },
+    teamLeaderId:0,
+    // userId: 0,
+    // user: {
+    //   accountNonLocked: true,
+    //   enabled:true
+    // },
   },
   volunteers: [],
   loading: false,

@@ -10,6 +10,7 @@ import type { RootState } from "../../redux/store/store";
 import { useSelector, useDispatch } from "react-redux";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Volunteer,
   delData,
@@ -17,11 +18,15 @@ import {
 } from "@/redux/slice/volunteers/volunteers";
 import { AppDispatch } from "../../redux/store/store";
 import PutDataSheet from "@/components/PutDataSheet";
+import VolunteerImageDialog from "@/components/VolunteerImageDialog";
 type Props = {};
 
 export default function VolunteerPage({}: Props) {
+  
   const { toast } = useToast();
   const [selectedId, setSelectedId] = useState<number>(0);
+  const [selectedIdForImage, setSelectedIdForImage] = useState<number | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const volunteersData = useSelector(
     (state: RootState) => state.volunteers.volunteers
   );
@@ -33,6 +38,10 @@ export default function VolunteerPage({}: Props) {
 
   const handleEditClick = (id: number) => {
     setSelectedId(id);
+  };
+  const imageDialogClick = (id: number) => {
+    setSelectedIdForImage(id);
+    setIsDialogOpen(true);
   };
 
   const [updatedData, setVolunteersData] = useState<Volunteer[]>({
@@ -87,13 +96,17 @@ export default function VolunteerPage({}: Props) {
       cell: ({ row }) => {
         return (
           <div className="flex gap-2 items-center">
-            <img
-              className="h-10 w-10"
-              src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${row.getValue(
-                "name"
-              )}`}
-              alt="user-image"
-            />
+            <Avatar>
+              <AvatarImage
+                src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${row.getValue(
+                  "name"
+                )}`}
+                alt="user-image"
+                onClick={() => {
+                  imageDialogClick(row.original.id);
+                }}
+              />
+            </Avatar>
             <p className="text-ellipsis overflow-hidden">
               {row.getValue("name")}
             </p>
@@ -105,10 +118,16 @@ export default function VolunteerPage({}: Props) {
       accessorKey: "surname",
       header: "Surname",
     },
+    // createdAt lazimdi
+    // {
+    //   accessorKey: "createdAt",
+    //   header: "Created",
+    // },
     {
-      accessorKey: "createdAt",
-      header: "Created",
+      accessorKey: "finCode",
+      header: "Fin Code",
     },
+
     {
       accessorKey: "formStatus",
       header: "Status",
@@ -146,7 +165,7 @@ export default function VolunteerPage({}: Props) {
         <Button
           className="p-2 size-9 rounded-xl bg-opacity-40 bg-gray-100  hover:bg-red-100"
           onClick={() => {
-            handleDelete(row.original.id)
+            handleDelete(row.original.id);
           }}
         >
           <UserRoundMinus color={"#FF8F8F"} />
@@ -158,6 +177,8 @@ export default function VolunteerPage({}: Props) {
     <div className="flex flex-col gap-5 w-full">
       <PageTitle title="Volunteers" />
       <DataTable columns={columns} data={updatedData} pageName="volunteer" />
+      {selectedIdForImage && <VolunteerImageDialog id={selectedIdForImage}  isOpen={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}/>}
     </div>
   );
 }

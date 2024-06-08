@@ -14,6 +14,7 @@ import {
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { usePathname } from "next/navigation";
 import { clearToken } from "@/redux/slice/volunteers/volunteers";
+import { clearTokenFromTeam } from "@/redux/slice/teamleader/teamleaders";
 interface NavProps {
   isCollapsed: boolean;
   links: {
@@ -32,6 +33,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
 
   const handleLogout = () => {
     dispatch(clearToken());
+    dispatch(clearTokenFromTeam());
     localStorage.removeItem("token");
     router.push("/");
   };

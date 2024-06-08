@@ -17,9 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { RootState } from "@/redux/store/store";
 import { setToken } from "../../redux/slice/volunteers/volunteers";
-
-
-
+import { setTokenForTeam } from "@/redux/slice/teamleader/teamleaders";
 
 export default function SignIn() {
   const dispatch = useDispatch();
@@ -28,15 +26,22 @@ export default function SignIn() {
   const storedToken = useSelector(
     (state: RootState) => state.volunteers.token
   );
+
+  const storedTokenForTeam = useSelector(
+    (state: RootState) => state.teamleaders.token
+  );
+
   useEffect(() => {
-    if (storedToken) {
+    if (storedToken && storedTokenForTeam) {
       dispatch(setToken(storedToken));
+      dispatch(setTokenForTeam(storedTokenForTeam));
       router.push("/dashboard");
     }
   }, [dispatch, router]);
 
   const handleSignIn = (token: string) => {
-    dispatch(setToken(token));
+      dispatch(setTokenForTeam(token));
+      dispatch(setToken(token));
     router.push("/dashboard");
   };
   const [username, setUserName] = useState("");

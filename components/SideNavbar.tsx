@@ -10,6 +10,7 @@ import {
   ChevronRight,
   ChevronLeft,
   LogIn,
+  UserRound,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { useWindowWidth } from "@react-hook/window-size";
@@ -61,6 +62,13 @@ export default function SideNavbar({}: Props) {
             icon: UsersRound,
             variant: "ghost",
             href: "/volunteer",
+          },
+          {
+            title: "TeamLeaders",
+            label: "",
+            icon: UserRound,
+            variant: "ghost",
+            href: "/teamleader",
           },
           {
             title: "Settings",

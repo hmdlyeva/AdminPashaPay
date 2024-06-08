@@ -16,28 +16,64 @@ import {
 import type { AppDispatch, RootState } from "../../redux/store/store";
 import { useSelector, useDispatch } from "react-redux";
 import { Location, getLocData } from "@/redux/slice/locations/locations";
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import { getData } from "@/redux/slice/volunteers/volunteers";
-
+import {
+  Teamleader,
+  getTeamLeader,
+} from "@/redux/slice/teamleader/teamleaders";
 
 export default function Dashboard() {
+  const dispatch: AppDispatch = useDispatch();
+
   const locationsData = useSelector(
     (state: RootState) => state.locations.locations
   );
   const volunteersData = useSelector(
     (state: RootState) => state.volunteers.volunteers
   );
-  const dispatch: AppDispatch = useDispatch();
-  const [recentActivities, setRecentActivities] = useState<ActivitiesProps[]>([]);
+  const teamleadersData = useSelector(
+    (state: RootState) => state.teamleaders.teamleaders
+  );
+
+  // console.log(teamleadersData);
+
+  // const [updatedTeamData, setTeamleadersData] = useState<Teamleader[]>({
+  //   ...teamleadersData,
+  // });
+
+  // useEffect(() => {
+  //   if (Array.isArray(teamleadersData)) {
+  //     setTeamleadersData(teamleadersData);
+  //   } else {
+  //     setTeamleadersData([]);
+  //   }
+  // }, [teamleadersData]);
+
+  const [recentActivities, setRecentActivities] = useState<ActivitiesProps[]>(
+    []
+  );
 
   useEffect(() => {
     dispatch(getLocData());
     dispatch(getData());
+    dispatch(getTeamLeader());
   }, [dispatch]);
+  // console.log(updatedTeamData);
+
 
   useEffect(() => {
-    if (locationsData.length > 0 || volunteersData.length > 0) {
+    if (
+      locationsData.length > 0 ||
+      volunteersData.length > 0 ||
+      teamleadersData.length > 0
+    ) {
       const latestLocation = locationsData[locationsData.length - 1];
+     
+      const latestTeamleader = teamleadersData[teamleadersData.length - 1];
+
+      // console.log(latestTeamleader);
+
       const latestLocationActivity = {
         type: "location",
         target: latestLocation.target,
@@ -45,6 +81,12 @@ export default function Dashboard() {
         district: latestLocation.district,
         ActivityIcon: Building2,
       };
+      const latestTeamleaderActivity = latestTeamleader && {
+        type: "teamleader",
+        name: `${latestTeamleader.name} ${latestTeamleader.surname}`,
+        phoneNumber: latestTeamleader.phoneNumber,
+        ActivityIcon: TrendingUp,
+      } ;
       const combinedData = [
         ...volunteersData.map((volunteer) => ({
           type: "volunteer",
@@ -53,30 +95,34 @@ export default function Dashboard() {
           phoneNumber: volunteer.phoneNumber,
           ActivityIcon: TrendingUp,
         })),
-       
       ];
 
       const sortedData = combinedData.sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
 
-      const recentVolunteersActivities = sortedData.slice(0, 4);
+      const recentVolunteersActivities = sortedData.slice(0, 3);
 
-      setRecentActivities([latestLocationActivity, ...recentVolunteersActivities]);
+      setRecentActivities([
+        latestLocationActivity,
+        latestTeamleaderActivity,
+        ...recentVolunteersActivities,
+      ].filter(activity => activity));
     }
-  }, [locationsData, volunteersData]);
+  }, [locationsData, volunteersData, teamleadersData]);
 
   const TotalWorkers = volunteersData.length;
   const TotalCapacity = locationsData.reduce(
     (total, location) => total + location.capacity,
     0
   );
-  const LockedWorkersCount = volunteersData.filter(
-    (volunteer) => volunteer.user && volunteer.user.accountNonLocked === false
-  ).length;
+  // const LockedWorkersCount = volunteersData.filter(
+  //   (volunteer) => volunteer.user && volunteer.user.accountNonLocked === false
+  // ).length;
 
   const EmployedWorkersCount = volunteersData.filter(
-    (volunteer) => volunteer.user && volunteer.user.enabled
+    (volunteer) => volunteer.formStatus
   ).length;
 
   const ResignatedWorkersCount = volunteersData.filter(
@@ -133,13 +179,12 @@ export default function Dashboard() {
       icon: TrendingDown,
     },
     {
-      label: "Locked",
-      amount: `${LockedWorkersCount}`,
+      label: "Team Leader",
+      amount: `${teamleadersData.length}`,
       description: "±0% from last month",
       icon: Lock,
     },
   ];
-
 
   return (
     <div className="flex gap-5 w-full">
@@ -171,15 +216,13 @@ export default function Dashboard() {
             </section>
             {recentActivities.map((recentActivity, i) => (
               <ActivitiesCard
-              key={i}
+                key={i}
                 ActivityIcon={recentActivity.ActivityIcon}
                 name={recentActivity.name}
                 phoneNumber={recentActivity.phoneNumber}
                 desc={recentActivity.desc}
                 district={recentActivity.district}
                 target={recentActivity.target}
-
-
               />
             ))}
           </CardContent>

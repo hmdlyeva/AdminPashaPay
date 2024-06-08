@@ -5,6 +5,13 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { Calendar } from "@/components/ui/calendar";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,10 +40,14 @@ import {
 import { toast } from "@/components/ui/use-toast";
 
 import { Input } from "@/components/ui/input";
-import React from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/redux/store/store";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store/store";
 import { postData } from "@/redux/slice/volunteers/volunteers";
+import {
+  Teamleader,
+  getTeamLeader,
+} from "@/redux/slice/teamleader/teamleaders";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -63,14 +74,16 @@ const formSchema = z.object({
   password: z.string().min(2, {
     message: "username must be at least 2 characters.",
   }),
-
+  teamLeaderId: z.number({
+    required_error: "A team leader is required.",
+  }),
   dateOfBirth: z.date({
     required_error: "A date of birth is required.",
   }),
   dateOfEmployment: z.date({
     required_error: "A date of birth is required.",
   }),
-  dateOfResignation: z.date({
+  dateOfResignation: z.string({
     required_error: "A date of birth is required.",
   }),
 });
@@ -80,6 +93,29 @@ export function VolunteerForm() {
 
   const dispatch = useDispatch<AppDispatch>();
 
+  const teamLeadersData = useSelector(
+    (state: RootState) => state.teamleaders.teamleaders
+  );
+
+  console.log(teamLeadersData);
+
+  useEffect(() => {
+    dispatch(getTeamLeader());
+  }, [dispatch]);
+
+  const [updatedTeamData, setTeamleadersData] = useState<Teamleader[]>({
+    ...teamLeadersData,
+  });
+
+  useEffect(() => {
+    if (Array.isArray(teamLeadersData)) {
+      setTeamleadersData(teamLeadersData);
+    } else {
+      setTeamleadersData([]);
+    }
+  }, [teamLeadersData]);
+
+  console.log(updatedTeamData);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -94,7 +130,8 @@ export function VolunteerForm() {
       password: "",
       dateOfBirth: new Date(),
       dateOfEmployment: new Date(),
-      dateOfResignation: new Date(),
+      dateOfResignation: "",
+      teamLeaderId: 0,
     },
   });
 
@@ -102,18 +139,18 @@ export function VolunteerForm() {
     console.log(data);
     const formattedData = {
       ...data,
+      username: data.username,
       dateOfBirth: format(data.dateOfBirth, "yyyy-MM-dd"),
       dateOfEmployment: format(data.dateOfEmployment, "yyyy-MM-dd"),
-      dateOfResignation: format(data.dateOfResignation, "yyyy-MM-dd"),
+      dateOfResignation: "",
     };
 
     console.log(formattedData);
     dispatch(
       postData({
         ...formattedData,
-        createdAt: new Date().toISOString(),
+        // createdAt: new Date().toISOString(),
         formStatus: true,
-        userId: 0,
       })
     );
 
@@ -246,47 +283,73 @@ export function VolunteerForm() {
           />
         </div>
 
-        <FormField
-          control={form.control}
-          name="dateOfBirth"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Date of birth</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-2 gap-3 transition-all items-center">
+          <FormField
+            control={form.control}
+            name="dateOfBirth"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Date of birth</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="teamLeaderId"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel className="">Team Leader</FormLabel>
+                <Select  onValueChange={(value) => field.onChange(Number(value))}>
+                  <SelectTrigger className="">
+                    <SelectValue placeholder="Team Leader" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {updatedTeamData &&
+                      Array.isArray(updatedTeamData) &&
+                      updatedTeamData.map((teamleader) => (
+                        <SelectItem  key={teamleader.id} value={String(teamleader.id)}>
+                          {teamleader.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}
@@ -302,8 +365,10 @@ export function VolunteerForm() {
             </FormItem>
           )}
         />
-        <Button className="bg-[#00C49F] hover:bg-[#FF8042] w-full" type="submit" 
->
+        <Button
+          className="bg-[#00C49F] hover:bg-[#FF8042] w-full"
+          type="submit"
+        >
           Submit
         </Button>
       </form>

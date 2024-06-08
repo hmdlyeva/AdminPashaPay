@@ -67,6 +67,9 @@ const formSchema = z.object({
   address: z.string().min(2, {
     message: "address must be at least 3 characters.",
   }),
+  teamLeaderId: z.number({
+    message: "A teamLeaderId is required.",
+  }),
   dateOfBirth: z.date({
     required_error: "A date of birth is required.",
   }),
@@ -89,21 +92,29 @@ export function PutVolunteerForm({ datam, idim }: Props) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       ...datam,
-      username: datam.user.username,
+      // password: "password yoxdu",
+      // dateOfResignation: "yyyy-MM-dd",
+      // dateOfResignation: datam.dateOfResignation
+      //   ? new Date(datam.dateOfResignation)
+      //   : "",
+
       dateOfBirth: datam ? new Date(datam.dateOfBirth) : new Date(),
       dateOfEmployment: datam ? new Date(datam.dateOfEmployment) : new Date(),
       dateOfResignation: datam ? new Date(datam.dateOfResignation) : new Date(),
     },
   });
   function onSubmit(data: z.infer<typeof formSchema>) {
+    console.log(data);
     const formattedData = {
       ...data,
-      username: data.username,
+      teamLeaderId:datam.teamLeaderId,
+      password: datam.password,
       dateOfBirth: format(data.dateOfBirth, "yyyy-MM-dd"),
       dateOfEmployment: format(data.dateOfEmployment, "yyyy-MM-dd"),
       dateOfResignation: format(data.dateOfResignation, "yyyy-MM-dd"),
       formStatus: datam.formStatus,
     };
+    console.log(formattedData);
     dispatch(
       putData({
         id: idim,
@@ -160,7 +171,7 @@ export function PutVolunteerForm({ datam, idim }: Props) {
                 <FormLabel>Username</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={datam ? `${datam.user.username}` : "username"}
+                    placeholder={datam ? `${datam.username}` : "username"}
                     {...field}
                   />
                 </FormControl>
@@ -311,7 +322,10 @@ export function PutVolunteerForm({ datam, idim }: Props) {
             </FormItem>
           )}
         /> */}
-        <Button className="bg-[#00C49F] hover:bg-[#FF8042] w-full" type="submit">
+        <Button
+          className="bg-[#00C49F] hover:bg-[#FF8042] w-full"
+          type="submit"
+        >
           Submit
         </Button>
       </form>

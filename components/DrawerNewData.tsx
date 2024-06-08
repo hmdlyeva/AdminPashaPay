@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/drawer";
 import { VolunteerForm } from "./VolunteerForm";
 import { LocationForm } from "./LocationForm";
+import { TeamLeaderForm } from "./TeamLeaderForm";
 
 type Props = {
   pageName?: string;
@@ -31,7 +32,7 @@ export function DrawerNewData({ pageName, title }: Props) {
             display: pageName === "settings" ? "none" : "",
           }}
           variant="outline"
-          className="ml-auto"
+          className=""
         >
           {" "}
           <Plus className="h-4 w-4" />
@@ -50,6 +51,8 @@ export function DrawerNewData({ pageName, title }: Props) {
               <VolunteerForm />
             ) : pageName === "location" ? (
               <LocationForm />
+            ) : pageName === "teamleader" ? (
+              <TeamLeaderForm />
             ) : (
               ""
             )}

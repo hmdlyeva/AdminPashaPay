@@ -42,7 +42,7 @@ export default function LocationPage({}: Props) {
       <div className="gap-5 flex flex-wrap w-full transitin-all gap-x-8">
         {allData &&
           Array.isArray(allData) &&
-          allData.map((reserv) => <div>{reserv.market}</div>)}
+          allData.map((reserv) => <div key={reserv.reservationId}>{reserv.market}</div>)}
       </div>
     </div>
   );

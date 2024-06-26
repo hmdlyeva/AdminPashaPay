@@ -31,17 +31,10 @@ export default function VolunteerImageDialog({ id, isOpen, onClose }: Props) {
   );
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      {/* <DialogTrigger asChild>
-      <Button variant="outline">imagemcim</Button>
-    </DialogTrigger> */}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{volunteer && volunteer.name}'s image</DialogTitle>
-          {/* <DialogDescription>
-          Make changes to your profile here. Click save when you're done.
-        </DialogDescription> */}
+        <DialogTitle>{volunteer && volunteer.name}&apos;s image</DialogTitle>
         </DialogHeader>
-
         <Avatar>
           <AvatarImage
             src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${
@@ -50,7 +43,6 @@ export default function VolunteerImageDialog({ id, isOpen, onClose }: Props) {
             alt="user-image"
           />
         </Avatar>
-
         <DialogFooter>
           <Button type="button" onClick={onClose}>
             Exit

@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const baseURL = "https://45.95.214.69/api/v1/location";
+const baseURL = "https://45.95.214.69:8080/api/v1/location";
 
 export const getLocData = createAsyncThunk("locations/getLocData", async () => {
   const response = await axios.get(baseURL);

@@ -2,21 +2,22 @@
 import { useSelector, useDispatch } from "react-redux";
 import SignIn from "./login/page";
 import Dashboard from "./dashboard/page";
-import {  RootState } from "../redux/store/store";
-
+import { RootState } from "../redux/store/store";
 
 export default function Home() {
- 
-  const token = useSelector((state: RootState) => state.volunteers.token);
+  const accessToken = useSelector(
+    (state: RootState) => state.volunteers.accessToken
+  );
 
+  const storedAccessToken = localStorage.getItem("accessToken");
 
-  if (token) {
+  if (storedAccessToken) {
     return <Dashboard />;
   }
 
   return (
     <div className="flex justify-center items-center w-full h-full">
-      <SignIn />
+      {/* <SignIn /> */}
     </div>
   );
 }

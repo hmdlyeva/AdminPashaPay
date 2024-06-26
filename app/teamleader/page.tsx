@@ -20,6 +20,8 @@ import {
   getData,
   putData,
 } from "@/redux/slice/volunteers/volunteers";
+import PutDataSheet from "@/components/PutDataSheet";
+import PageTitle from "@/components/PageTitle";
 type Props = {};
 
 export default function Teamleader({}: Props) {
@@ -71,7 +73,6 @@ export default function Teamleader({}: Props) {
       action: <ToastAction altText="Deleting">Deleting</ToastAction>,
     });
   };
-  // console.log(updatedTeamData);
   const pageName = "teamleader";
   const [titlePageName, setTitlePageName] = useState("");
   useEffect(() => {
@@ -86,7 +87,8 @@ export default function Teamleader({}: Props) {
 
   return (
     <div className="">
-      <div className="flex justify-between">
+      <PageTitle title="TeamLeaders" />
+      <div className="flex justify-between items-center">
         <DrawerNewData pageName={pageName} title={titlePageName} />
         <BurnBarrel
           setTeamleadersData={setTeamleadersData}
@@ -105,6 +107,7 @@ export default function Teamleader({}: Props) {
               updatedTeamData={updatedTeamData}
               updatedVolunteersData={updatedVolunteersData}
               setUpdatedVolunteersData={setUpdatedVolunteersData}
+              setTeamleadersData={setTeamleadersData}
               setTeamLeaderIdim={setTeamLeaderIdim}
             />
           ))}
@@ -117,6 +120,7 @@ type TeamleaderColumnProps = {
   updatedTeamData: Teamleader[];
   updatedVolunteersData: Volunteer[];
   setUpdatedVolunteersData: React.Dispatch<React.SetStateAction<Volunteer[]>>;
+  setTeamleadersData: React.Dispatch<React.SetStateAction<Teamleader[]>>;
   setTeamLeaderIdim: any;
 };
 const TeamleaderColumn = ({
@@ -125,6 +129,7 @@ const TeamleaderColumn = ({
   updatedVolunteersData,
   setUpdatedVolunteersData,
   setTeamLeaderIdim,
+  setTeamleadersData,
 }: TeamleaderColumnProps) => {
   const [cards, setCards] = useState<Volunteer[]>([]);
 
@@ -144,6 +149,7 @@ const TeamleaderColumn = ({
       setCards={setCards}
       updatedVolunteersData={updatedVolunteersData}
       updatedTeamData={updatedTeamData}
+      setTeamleadersData={setTeamleadersData}
       setUpdatedVolunteersData={setUpdatedVolunteersData}
       setTeamLeaderIdim={setTeamLeaderIdim}
     />
@@ -159,15 +165,18 @@ type ColumnTypes = {
   setCards: (cards: Volunteer[]) => void;
   setTeamLeaderIdim: any;
   setUpdatedVolunteersData: React.Dispatch<React.SetStateAction<Volunteer[]>>;
+  setTeamleadersData: React.Dispatch<React.SetStateAction<Teamleader[]>>;
 };
 const Column = ({
   teamLeaderName,
   headingColor,
   cards,
   id,
+  updatedTeamData,
   updatedVolunteersData,
   setUpdatedVolunteersData,
   setCards,
+  setTeamleadersData,
   setTeamLeaderIdim,
 }: ColumnTypes) => {
   const [active, setActive] = useState(false);
@@ -198,7 +207,6 @@ const Column = ({
     }
 
     if (before !== cardId.toString()) {
-      console.log("Cardi hansi yere atdim:", TeamCards);
 
       let cardToTransfer = updatedVolunteersData.find((c) => c.id === cardId);
       if (!cardToTransfer) return;
@@ -206,15 +214,16 @@ const Column = ({
       const formattedCard = {
         ...cardToTransfer,
         teamLeaderId: targetColumnId,
+        dateOfResignation: cardToTransfer.dateOfResignation
+          ? cardToTransfer.dateOfResignation
+          : "",
       };
 
       try {
         await dispatch(putData({ id: cardId, newp: formattedCard }));
 
-        console.log(targetColumnId);
-
         cardToTransfer = { ...cardToTransfer, teamLeaderId: targetColumnId };
-        // teamCards dan yox, goturduyum card hansi teama aiddise o array
+
         let updatedVolunteers: Volunteer[] | any = updatedVolunteersData
           ? updatedVolunteersData.map((volunteer) =>
               volunteer.id === cardId ? cardToTransfer : volunteer
@@ -324,6 +333,14 @@ const Column = ({
         >
           {teamLeaderName}
         </h3>
+
+        <PutDataSheet
+          allData={updatedTeamData}
+          setAllData={setTeamleadersData}
+          pageName="teamleader"
+          id={id}
+        />
+
         <span className="rounded text-sm text-neutral-400">
           {TeamCards.length}
         </span>

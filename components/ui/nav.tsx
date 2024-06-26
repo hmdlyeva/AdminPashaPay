@@ -23,6 +23,7 @@ interface NavProps {
     icon: LucideIcon;
     variant: "default" | "ghost";
     href: string;
+    onClick?: () => void;
   }[];
 }
 
@@ -34,7 +35,8 @@ export function Nav({ links, isCollapsed }: NavProps) {
   const handleLogout = () => {
     dispatch(clearToken());
     dispatch(clearTokenFromTeam());
-    localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     router.push("/");
   };
   return (

@@ -54,8 +54,8 @@ export default function VolunteerPage({}: Props) {
 
   const handleDelete = (id: number) => {
     dispatch(delData(id)).then(() => {
-      const updatedData = volunteersData.filter((row) => row.id !== id);
-      setVolunteersData(updatedData);
+      const updatednewData = updatedData.filter((row) => row.id !== id);
+      setVolunteersData(updatednewData);
     });
 
     toast({
@@ -150,12 +150,12 @@ export default function VolunteerPage({}: Props) {
       accessorKey: "edit",
       header: "Edit",
       cell: ({ row }) => (
-        <Button
-          className="bg-transparent hover:bg-transparent"
-          onClick={() => handleEditClick(row.original.id)}
-        >
-          <PutDataSheet pageName="volunteer" id={selectedId} />
-        </Button>
+        // <Button
+        //   className="bg-transparent hover:bg-transparent"
+        //   onClick={() => handleEditClick(row.original.id)}
+        // >
+          <PutDataSheet allData={updatedData} setAllData={setVolunteersData} pageName="volunteer" id={row.original.id} />
+        // </Button>
       ),
     },
     {

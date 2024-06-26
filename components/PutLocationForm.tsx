@@ -44,9 +44,11 @@ const formSchema = z.object({
 type Props = {
   datam: Location | any;
   idim?: number | any;
+  setAllData: React.Dispatch<React.SetStateAction<Location[]>>;
+  allData: Location[];
 };
 
-export function PutLocationForm({ datam, idim }: Props) {
+export function PutLocationForm({ datam, idim, setAllData, allData }: Props) {
   const { toast } = useToast();
 
   const [capacityMount, setCapacityMount] = useState(datam?.capacity || 0);
@@ -64,14 +66,18 @@ export function PutLocationForm({ datam, idim }: Props) {
       ...data,
       capacity: capacityMount,
     };
-    console.log(data);
 
     dispatch(
       putLocData({
         id: idim,
         newp: formattedData,
       })
-    );
+    ).then(() => {
+      const updatedAllData = allData.map((row) =>
+        row.id === idim ? { ...row, ...formattedData } : row
+      );
+      setAllData(updatedAllData);
+    });
     // toast({
     //   title: "Success",
     //   description: "Location data updated successfully",
@@ -184,8 +190,6 @@ export function PutLocationForm({ datam, idim }: Props) {
                     {...field}
                     value={capacityMount}
                     onChange={(e) => {
-                      console.log(e.target.value);
-                      console.log(typeof e.target.value);
                       setCapacityMount(parseInt(e.target.value));
                     }}
                   />
@@ -195,7 +199,10 @@ export function PutLocationForm({ datam, idim }: Props) {
             )}
           />
         </div>
-        <Button className="bg-[#00C49F] hover:bg-[#FF8042] w-full" type="submit">
+        <Button
+          className="bg-[#00C49F] hover:bg-[#FF8042] w-full"
+          type="submit"
+        >
           Submit
         </Button>
       </form>

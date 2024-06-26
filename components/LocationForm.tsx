@@ -169,8 +169,6 @@ export function LocationForm() {
                     {...field}
                     value={capacityMount}
                     onChange={(e) => {
-                      console.log(e.target.value);
-                      console.log(typeof e.target.value);
                       setCapacityMount(parseInt(e.target.value));
                     }}
                   />

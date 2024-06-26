@@ -36,20 +36,6 @@ export default function Dashboard() {
     (state: RootState) => state.teamleaders.teamleaders
   );
 
-  // console.log(teamleadersData);
-
-  // const [updatedTeamData, setTeamleadersData] = useState<Teamleader[]>({
-  //   ...teamleadersData,
-  // });
-
-  // useEffect(() => {
-  //   if (Array.isArray(teamleadersData)) {
-  //     setTeamleadersData(teamleadersData);
-  //   } else {
-  //     setTeamleadersData([]);
-  //   }
-  // }, [teamleadersData]);
-
   const [recentActivities, setRecentActivities] = useState<ActivitiesProps[]>(
     []
   );
@@ -59,26 +45,23 @@ export default function Dashboard() {
     dispatch(getData());
     dispatch(getTeamLeader());
   }, [dispatch]);
-  // console.log(updatedTeamData);
-
 
   useEffect(() => {
     if (
-      locationsData.length > 0 ||
-      volunteersData.length > 0 ||
-      teamleadersData.length > 0
+      locationsData?.length > 0 ||
+      volunteersData?.length > 0 ||
+      teamleadersData?.length > 0
     ) {
       const latestLocation = locationsData[locationsData.length - 1];
      
       const latestTeamleader = teamleadersData[teamleadersData.length - 1];
 
-      // console.log(latestTeamleader);
 
       const latestLocationActivity = {
         type: "location",
-        target: latestLocation.target,
-        desc: latestLocation.desc,
-        district: latestLocation.district,
+        target: latestLocation?.target,
+        desc: latestLocation?.desc,
+        district: latestLocation?.district,
         ActivityIcon: Building2,
       };
       const latestTeamleaderActivity = latestTeamleader && {

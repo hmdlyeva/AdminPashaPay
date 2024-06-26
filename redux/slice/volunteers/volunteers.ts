@@ -5,23 +5,29 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { useEffect } from "react";
 
-const baseURL = "https://45.95.214.69/api/v1/admin/volunteer";
+const baseURL = "https://45.95.214.69:8080/api/v1/admin/volunteer";
+const accessTokenim = localStorage.getItem("accessToken");
 
-
-export const getData = createAsyncThunk("volunteers/getData", async (_, { getState }) => {
-  const token = (getState() as RootState).volunteers.token;
-  const response = await axios.get(baseURL, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return response.data;
-});
+export const getData = createAsyncThunk(
+  "volunteers/getData",
+  async (_, { getState }) => {
+    const accessToken = (getState() as RootState).volunteers.accessToken;
+    const refreshToken = (getState() as RootState).volunteers.refreshToken;
+    const response = await axios.get(baseURL, {
+      headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
+    });
+    return response.data;
+  }
+);
 
 export const getDataById = createAsyncThunk(
   "volunteers/getDataById",
   async (id: number, { getState }) => {
-    const token = (getState() as RootState).volunteers.token;
+    const accessToken = (getState() as RootState).volunteers.accessToken;
+    const refreshToken = (getState() as RootState).volunteers.refreshToken;
+
     const response = await axios.get(`${baseURL}/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
     });
     return response.data;
   }
@@ -30,10 +36,11 @@ export const getDataById = createAsyncThunk(
 export const delData = createAsyncThunk(
   "volunteers/delData",
   async (id: number, { getState }) => {
-    console.log("deleted id:" + id);
-    const token = (getState() as RootState).volunteers.token;
+    const accessToken = (getState() as RootState).volunteers.accessToken;
+    const refreshToken = (getState() as RootState).volunteers.refreshToken;
+
     const response = await axios.delete(`${baseURL}/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
     });
     return response.data;
   }
@@ -41,36 +48,37 @@ export const delData = createAsyncThunk(
 
 export const putData = createAsyncThunk(
   "volunteers/putData",
-  async ({ id, newp }: { id: number; newp: Partial<Volunteer> }, { getState }) => {
-    console.log(newp);
-    const token = (getState() as RootState).volunteers.token;
-    // console.log("tokenim" + token);
+  async (
+    { id, newp }: { id: number; newp: Partial<Volunteer> },
+    { getState }
+  ) => {
+    const accessToken = (getState() as RootState).volunteers.accessToken;
+    const refreshToken = (getState() as RootState).volunteers.refreshToken;
+
     const response = await axios.put(`${baseURL}/${id}`, newp, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}`,
         "Content-Type": "application/json",
       },
     });
-    console.log("responseee dataaa: " + response.data);
     return response.data;
   }
 );
 
 export const postData = createAsyncThunk(
   "volunteers/postData",
-  async (newp: Partial<Volunteer>, { rejectWithValue, getState },) => {
+  async (newp: Partial<Volunteer>, { rejectWithValue, getState }) => {
     try {
-      const token = (getState() as RootState).volunteers.token;
-      const response = await axios.post(baseURL, newp, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const accessToken = (getState() as RootState).volunteers.accessToken;
+      const refreshToken = (getState() as RootState).volunteers.refreshToken;
 
-      console.log("my response post data", response.data);
+      const response = await axios.post(baseURL, newp, {
+        headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
+      });
 
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 409) {
-        console.log("Username already in use!");
         toast({
           variant: "destructive",
           title: "This username already in use!",
@@ -86,14 +94,14 @@ export const postData = createAsyncThunk(
 
 export interface User {
   accountNonLocked: boolean;
-  enabled:boolean
+  enabled: boolean;
 }
 
 export interface Volunteer {
   id: number;
   name: string;
   surname: string;
-  username:string;
+  username: string;
   password: string;
   finCode: string;
   phoneNumber: string;
@@ -103,7 +111,7 @@ export interface Volunteer {
   university: string;
   address: string;
   formStatus: boolean;
-  teamLeaderId:number;
+  teamLeaderId: number;
 
   createdAt: string;
   // userId: number;
@@ -114,7 +122,8 @@ export interface VolunteerState {
   volunteer: Volunteer;
   volunteers: Volunteer[];
   loading: boolean;
-  token: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
 }
 
 const initialState: VolunteerState = {
@@ -122,7 +131,7 @@ const initialState: VolunteerState = {
     id: 0,
     name: "",
     surname: "",
-    username:"",
+    username: "",
     password: "",
     createdAt: "",
     finCode: "",
@@ -133,7 +142,7 @@ const initialState: VolunteerState = {
     university: "",
     address: "",
     formStatus: true,
-    teamLeaderId:0,
+    teamLeaderId: 0,
     // userId: 0,
     // user: {
     //   accountNonLocked: true,
@@ -142,18 +151,23 @@ const initialState: VolunteerState = {
   },
   volunteers: [],
   loading: false,
-  token: null,
+  accessToken: null,
+  refreshToken: null,
 };
 
 export const volunteerSlice = createSlice({
   name: "volunteer",
   initialState,
   reducers: {
-    setToken(state, action) {
-      state.token = action.payload;
+    setAccToken(state, action) {
+      state.accessToken = action.payload;
+    },
+    setRefToken(state, action) {
+      state.refreshToken = action.payload;
     },
     clearToken(state) {
-      state.token = null;
+      state.accessToken = null;
+      state.refreshToken = null;
     },
   },
   extraReducers: (builder) => {
@@ -233,6 +247,6 @@ export const volunteerSlice = createSlice({
   },
 });
 
-export const { setToken, clearToken } = volunteerSlice.actions;
+export const { setAccToken, setRefToken, clearToken } = volunteerSlice.actions;
 
 export default volunteerSlice.reducer;

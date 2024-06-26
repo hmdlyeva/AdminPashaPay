@@ -44,6 +44,8 @@ import {
 type Props = {
   datam: Volunteer | any;
   idim?: number | any;
+  setAllData: React.Dispatch<React.SetStateAction<Volunteer[]>>
+  allData: Volunteer[];
 };
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -81,10 +83,9 @@ const formSchema = z.object({
   }),
 });
 
-export function PutVolunteerForm({ datam, idim }: Props) {
+export function PutVolunteerForm({ datam, idim, setAllData, allData }: Props) {
   const { toast } = useToast();
 
-  console.log(datam);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -104,7 +105,6 @@ export function PutVolunteerForm({ datam, idim }: Props) {
     },
   });
   function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log(data);
     const formattedData = {
       ...data,
       teamLeaderId:datam.teamLeaderId,
@@ -114,13 +114,17 @@ export function PutVolunteerForm({ datam, idim }: Props) {
       dateOfResignation: format(data.dateOfResignation, "yyyy-MM-dd"),
       formStatus: datam.formStatus,
     };
-    console.log(formattedData);
     dispatch(
       putData({
         id: idim,
         newp: formattedData,
       })
-    );
+    ).then(() => {
+      const updatedAllData = allData.map((row) =>
+        row.id === idim ? { ...row, ...formattedData } : row
+      );
+      setAllData(updatedAllData);
+    });
   }
 
   return (

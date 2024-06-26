@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -16,32 +16,58 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { RootState } from "@/redux/store/store";
-import { setToken } from "../../redux/slice/volunteers/volunteers";
-import { setTokenForTeam } from "@/redux/slice/teamleader/teamleaders";
+import {
+  setAccToken,
+  setRefToken,
+} from "../../redux/slice/volunteers/volunteers";
+import {
+  setAccTokenForTeam,
+  setRefTokenForTeam,
+} from "@/redux/slice/teamleader/teamleaders";
 
 export default function SignIn() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const storedToken = useSelector(
-    (state: RootState) => state.volunteers.token
+  const storedAccToken = useSelector(
+    (state: RootState) => state.volunteers.accessToken
+  );
+  const storedRefToken = useSelector(
+    (state: RootState) => state.volunteers.refreshToken
   );
 
-  const storedTokenForTeam = useSelector(
-    (state: RootState) => state.teamleaders.token
+  const storedAccTokenForTeam = useSelector(
+    (state: RootState) => state.teamleaders.accessToken
+  );
+  const storedRefTokenForTeam = useSelector(
+    (state: RootState) => state.teamleaders.refreshToken
   );
 
   useEffect(() => {
-    if (storedToken && storedTokenForTeam) {
-      dispatch(setToken(storedToken));
-      dispatch(setTokenForTeam(storedTokenForTeam));
+    if (
+      storedAccToken &&
+      storedAccTokenForTeam &&
+      storedRefToken &&
+      storedRefTokenForTeam
+    ) {
+      dispatch(setAccToken(storedAccToken));
+      dispatch(setRefToken(storedRefToken));
+
+      dispatch(setAccTokenForTeam(storedAccTokenForTeam));
+      dispatch(setRefTokenForTeam(storedRefTokenForTeam));
       router.push("/dashboard");
     }
   }, [dispatch, router]);
 
-  const handleSignIn = (token: string) => {
-      dispatch(setTokenForTeam(token));
-      dispatch(setToken(token));
+  const handleSignIn = (accessToken: string, refreshToken: string) => {
+    dispatch(setAccToken(accessToken));
+    dispatch(setRefToken(refreshToken));
+    
+    dispatch(setAccTokenForTeam(accessToken));
+    dispatch(setRefTokenForTeam(refreshToken));
+
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
     router.push("/dashboard");
   };
   const [username, setUserName] = useState("");
@@ -52,11 +78,12 @@ export default function SignIn() {
     if (username === "admin" && password === "admin") {
       try {
         const signInResponse = await axios.post(
-          "https://45.95.214.69/api/v1/auth/sign-in",
+          "https://45.95.214.69:8080/api/v1/auth/sign-in",
           { username, password }
         );
-        const token = signInResponse.data.accessToken;
-        handleSignIn(token);
+        const accessToken = signInResponse.data.accessToken;
+        const refreshToken = signInResponse.data.refreshToken;
+        handleSignIn(accessToken, refreshToken);
       } catch (error) {
         console.error("Sign in error:", error);
         alert(`Failed to sign in`);
@@ -65,6 +92,7 @@ export default function SignIn() {
       alert("Incorrect username or password");
     }
   };
+
 
   return (
     <form onSubmit={handleSubmit}>
@@ -112,4 +140,3 @@ export default function SignIn() {
     </form>
   );
 }
-

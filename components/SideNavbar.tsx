@@ -11,18 +11,32 @@ import {
   ChevronLeft,
   LogIn,
   UserRound,
+  AlarmClockCheck
 } from "lucide-react";
+import { clearToken } from "@/redux/slice/volunteers/volunteers"; 
+import { clearTokenFromTeam } from "@/redux/slice/teamleader/teamleaders";
 import { Button } from "./ui/button";
 import { useWindowWidth } from "@react-hook/window-size";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 type Props = {};
 
 export default function SideNavbar({}: Props) {
   const [isCollapsed, setisCollapsed] = useState(false);
+  const router = useRouter();
+  const dispatch = useDispatch();
   const onlyWidth = useWindowWidth();
   const mobileWidth = onlyWidth < 1100;
   function toggleSidebar() {
     setisCollapsed(!isCollapsed);
   }
+  const handleLogout = () => {
+    dispatch(clearToken());
+    dispatch(clearTokenFromTeam());
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    router.push("/login");
+  };
 
   return (
     <div
@@ -71,6 +85,13 @@ export default function SideNavbar({}: Props) {
             href: "/teamleader",
           },
           {
+            title: "Reservations",
+            label: "",
+            icon: AlarmClockCheck,
+            variant: "ghost",
+            href: "/reservation",
+          },
+          {
             title: "Settings",
             label: "",
             icon: Settings2,
@@ -82,7 +103,8 @@ export default function SideNavbar({}: Props) {
             label: "",
             icon: LogOut,
             variant: "ghost",
-            href: "/login",
+            href: "#",
+            onClick: handleLogout,
           },
         ]}
       />

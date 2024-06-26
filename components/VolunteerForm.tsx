@@ -97,8 +97,6 @@ export function VolunteerForm() {
     (state: RootState) => state.teamleaders.teamleaders
   );
 
-  console.log(teamLeadersData);
-
   useEffect(() => {
     dispatch(getTeamLeader());
   }, [dispatch]);
@@ -114,8 +112,6 @@ export function VolunteerForm() {
       setTeamleadersData([]);
     }
   }, [teamLeadersData]);
-
-  console.log(updatedTeamData);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -136,7 +132,6 @@ export function VolunteerForm() {
   });
 
   function onSubmit(data: z.infer<typeof formSchema>) {
-    console.log(data);
     const formattedData = {
       ...data,
       username: data.username,
@@ -145,7 +140,6 @@ export function VolunteerForm() {
       dateOfResignation: "",
     };
 
-    console.log(formattedData);
     dispatch(
       postData({
         ...formattedData,

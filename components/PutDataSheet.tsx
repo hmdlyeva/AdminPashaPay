@@ -18,13 +18,25 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "./ui/use-toast";
 import { PutLocationForm } from "./PutLocationForm";
 import { PutVolunteerForm } from "./PutVolunteerForm";
-import { getDataById } from "@/redux/slice/volunteers/volunteers";
+import { Volunteer, getDataById } from "@/redux/slice/volunteers/volunteers";
+import {
+  Teamleader,
+  getTeamLeaderById,
+} from "@/redux/slice/teamleader/teamleaders";
+import { PutTeamLeaderForm } from "./PutTeamLeaderForm";
 type Props = {
   id: number;
   pageName: string;
+  setAllData: React.Dispatch<React.SetStateAction<any[]>>;
+  allData: any[];
 };
 
-export default function PutDataSheet({ id, pageName }: Props) {
+export default function PutDataSheet({
+  id,
+  pageName,
+  setAllData,
+  allData,
+}: Props) {
   const [titlePageName, setTitlePageName] = useState("");
   useEffect(() => {
     if (pageName) {
@@ -37,18 +49,18 @@ export default function PutDataSheet({ id, pageName }: Props) {
   useEffect(() => {
     if (pageName === "location" && id) {
       dispatch(getLocDataById(id));
+    } else if (pageName === "teamleader" && id) {
+      dispatch(getTeamLeaderById(id));
     } else if (id) {
       dispatch(getDataById(id));
     }
   }, [dispatch, id, pageName]);
 
-  const location = useSelector((state: RootState) =>
-    state.locations.locations.find((loc) => loc.id === id)
-  );
+  const location = allData.find((loc) => loc.id === id);
 
-  const volunteer = useSelector((state: RootState) =>
-    state.volunteers.volunteers.find((vol) => vol.id === id)
-  );
+  const volunteer = allData.find((vol) => vol.id === id);
+
+  const teamleader = allData.find((vol) => vol.id === id);
 
   return (
     <Sheet>
@@ -69,9 +81,26 @@ export default function PutDataSheet({ id, pageName }: Props) {
         </SheetHeader>
 
         {pageName === "location" ? (
-          <PutLocationForm datam={location} idim={id} />
+          <PutLocationForm
+            setAllData={setAllData}
+            allData={allData}
+            datam={location}
+            idim={id}
+          />
+        ) : pageName === "teamleader" ? (
+          <PutTeamLeaderForm
+            setAllData={setAllData}
+            allData={allData}
+            datam={teamleader}
+            idim={id}
+          />
         ) : (
-          <PutVolunteerForm datam={volunteer} idim={id} />
+          <PutVolunteerForm
+            setAllData={setAllData}
+            allData={allData}
+            datam={volunteer}
+            idim={id}
+          />
         )}
       </SheetContent>
     </Sheet>

@@ -26,7 +26,9 @@ export default function LocationPage({}: Props) {
   );
   const dispatch: AppDispatch = useDispatch();
   const [selectedId, setSelectedId] = useState<number>(0);
-  const [allData, setAllData] = useState<Location[]>(locationsData);
+  const [allData, setAllData] = useState<Location[]>({
+    ...locationsData,
+  });
 
   useEffect(() => {
     dispatch(getLocData());
@@ -38,7 +40,8 @@ export default function LocationPage({}: Props) {
 
   const handleDelete = (id: number) => {
     dispatch(delLocData(id)).then(() => {
-      setAllData(locationsData.filter((row) => row.id !== id));
+      const updatednewData = allData.filter((row) => row.id !== id);
+      setAllData(updatednewData);
     });
   };
 
@@ -134,12 +137,12 @@ export default function LocationPage({}: Props) {
       accessorKey: "edit",
       header: "Edit",
       cell: ({ row }) => (
-        <Button
-          className="bg-transparent hover:bg-transparent"
-          onClick={() => handleEditClick(row.original.id)}
-        >
-          <PutDataSheet pageName="location" id={selectedId} />
-        </Button>
+        // <Button
+        //   className="bg-transparent hover:bg-transparent"
+        //   onClick={() => handleEditClick(row.original.id)}
+        // >
+        <PutDataSheet allData={allData} setAllData={setAllData} pageName="location" id={row.original.id} />
+        // </Button>
       ),
     },
     {

@@ -2,16 +2,8 @@
 import {
   InputOTP,
   InputOTPGroup,
-  InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { Calendar } from "@/components/ui/calendar";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -40,16 +31,19 @@ import {
 import { toast } from "@/components/ui/use-toast";
 
 import { Input } from "@/components/ui/input";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/store/store";
-import { postData } from "@/redux/slice/volunteers/volunteers";
+import React from "react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store/store";
 import {
   Teamleader,
-  getTeamLeader,
-  postTeamleader,
+  putTeamleader,
 } from "@/redux/slice/teamleader/teamleaders";
-
+type Props = {
+  datam: Teamleader | any;
+  idim?: number | any;
+  setAllData: React.Dispatch<React.SetStateAction<Teamleader[]>>;
+  allData: Teamleader[];
+};
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "name must be at least 3 characters.",
@@ -63,64 +57,32 @@ const formSchema = z.object({
   phoneNumber: z.string().min(10, {
     message: "phone Number must be 10 numbers.",
   }),
-  password: z.string().min(2, {
-    message: "username must be at least 2 characters.",
-  }),
 });
 
-export function TeamLeaderForm() {
+export function PutTeamLeaderForm({ datam, idim, setAllData, allData }: Props) {
   const { toast } = useToast();
-
   const dispatch = useDispatch<AppDispatch>();
-
-  const teamLeadersData = useSelector(
-    (state: RootState) => state.teamleaders.teamleaders
-  );
-
-  useEffect(() => {
-    dispatch(getTeamLeader());
-  }, [dispatch]);
-
-  const [updatedTeamData, setTeamleadersData] = useState<Teamleader[]>({
-    ...teamLeadersData,
-  });
-
-  useEffect(() => {
-    if (Array.isArray(teamLeadersData)) {
-      setTeamleadersData(teamLeadersData);
-    } else {
-      setTeamleadersData([]);
-    }
-  }, [teamLeadersData]);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      surname: "",
-      username: "",
-      phoneNumber: "",
-      password: "",
-     
+      ...datam,
     },
   });
-
   function onSubmit(data: z.infer<typeof formSchema>) {
     const formattedData = {
       ...data,
+      password: datam.password,
     };
     dispatch(
-      postTeamleader({
-        ...formattedData,
-        // createdAt: new Date().toISOString(),
+      putTeamleader({
+        id: idim,
+        newp: formattedData,
       })
-    );
-
-    toast({
-      variant: "default",
-      title: "New TeamLeader's data created successfully.",
-      description: "This teamleader will be better then others huh.",
-      action: <ToastAction altText="Creating">Creating</ToastAction>,
+    ).then(() => {
+      const updatedAllData = allData.map((row) =>
+        row.id === idim ? { ...row, ...formattedData } : row
+      );
+      setAllData(updatedAllData);
     });
   }
 
@@ -135,7 +97,10 @@ export function TeamLeaderForm() {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder="name" {...field} />
+                  <Input
+                    placeholder={datam ? `${datam.name}` : "name"}
+                    {...field}
+                  />
                 </FormControl>
 
                 <FormMessage />
@@ -149,7 +114,10 @@ export function TeamLeaderForm() {
               <FormItem>
                 <FormLabel>Surname</FormLabel>
                 <FormControl>
-                  <Input placeholder="surname" {...field} />
+                  <Input
+                    placeholder={datam ? `${datam.surname}` : "surname"}
+                    {...field}
+                  />
                 </FormControl>
 
                 <FormMessage />
@@ -165,7 +133,10 @@ export function TeamLeaderForm() {
               <FormItem>
                 <FormLabel>Username</FormLabel>
                 <FormControl>
-                  <Input placeholder="username" {...field} />
+                  <Input
+                    placeholder={datam ? `${datam.username}` : "username"}
+                    {...field}
+                  />
                 </FormControl>
 
                 <FormMessage />
@@ -179,7 +150,12 @@ export function TeamLeaderForm() {
               <FormItem>
                 <FormLabel>phone Number</FormLabel>
                 <FormControl>
-                  <Input placeholder="phone Number" {...field} />
+                  <Input
+                    placeholder={
+                      datam ? `${datam.phoneNumber}` : "phone number"
+                    }
+                    {...field}
+                  />
                 </FormControl>
 
                 <FormMessage />
@@ -188,7 +164,7 @@ export function TeamLeaderForm() {
           />
         </div>
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="password"
           render={({ field }) => (
@@ -201,7 +177,7 @@ export function TeamLeaderForm() {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
         <Button
           className="bg-[#00C49F] hover:bg-[#FF8042] w-full"
           type="submit"

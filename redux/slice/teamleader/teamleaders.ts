@@ -9,9 +9,6 @@ import { Volunteer } from "../volunteers/volunteers";
 
 const baseURL = "https://45.95.214.69:8080/api/v1/admin/team-leader";
 
-// const accessTokenim = localStorage.getItem("accessToken");
-  const refreshTokenim = localStorage.getItem("refreshToken");
-
 export const getTeamLeader = createAsyncThunk(
   "teamleaders/getTeamLeader",
   async (_, { getState }) => {

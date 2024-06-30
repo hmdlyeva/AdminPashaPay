@@ -33,8 +33,6 @@ export default function SideNavbar({}: Props) {
   const handleLogout = () => {
     dispatch(clearToken());
     dispatch(clearTokenFromTeam());
-    // localStorage.removeItem("accessToken");
-    // localStorage.removeItem("refreshToken");
     router.push("/login");
   };
 

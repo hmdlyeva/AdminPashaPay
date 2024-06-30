@@ -28,8 +28,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   );
   const dispatch = useDispatch();
 
-  // const storedAccessToken = localStorage.getItem("accessToken");
-  // const storedRefreshToken = localStorage.getItem("refreshToken");
 
   const [AccessTkn, setAccessTkn] = useState<string | null>(null);
   const [RefTkn, setRefTkn] = useState<string | null>(null);
@@ -52,9 +50,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           const newRefreshToken = response.data.refreshToken;
           dispatch(setAccToken(newAccessToken));
           dispatch(setRefToken(newRefreshToken));
-
-          localStorage.setItem("accessToken", newAccessToken);
-          localStorage.setItem("refreshToken", newRefreshToken);
 
           dispatch(setAccTokenForTeam(newAccessToken));
           dispatch(setRefTokenForTeam(newRefreshToken));

@@ -6,7 +6,6 @@ import axios from "axios";
 import { useEffect } from "react";
 
 const baseURL = "https://45.95.214.69:8080/api/v1/admin/volunteer";
-// const accessTokenim = localStorage.getItem("accessToken");
 
 export const getData = createAsyncThunk(
   "volunteers/getData",

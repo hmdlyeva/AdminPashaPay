@@ -9,7 +9,7 @@ import { Volunteer } from "../volunteers/volunteers";
 
 const baseURL = "https://45.95.214.69:8080/api/v1/admin/team-leader";
 
-const accessTokenim = localStorage.getItem("accessToken");
+// const accessTokenim = localStorage.getItem("accessToken");
   const refreshTokenim = localStorage.getItem("refreshToken");
 
 export const getTeamLeader = createAsyncThunk(
@@ -18,7 +18,7 @@ export const getTeamLeader = createAsyncThunk(
     const accessToken = (getState() as RootState).teamleaders.accessToken;
     const refreshToken = (getState() as RootState).teamleaders.refreshToken;
     const response = await axios.get(baseURL, {
-      headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
+      headers: { Authorization: `Bearer ${accessToken || refreshToken}` },
     });
     return response.data;
   }
@@ -30,7 +30,7 @@ export const getTeamLeaderVolunteers = createAsyncThunk(
       const accessToken = (getState() as RootState).teamleaders.accessToken;
       const refreshToken = (getState() as RootState).teamleaders.refreshToken;
       const response = await axios.get(`${baseURL}/volunteers/${id}`, {
-        headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
+        headers: { Authorization: `Bearer ${accessToken || refreshToken}` },
       });
       return response.data;
     }
@@ -42,7 +42,7 @@ export const getTeamLeaderById = createAsyncThunk(
     const accessToken = (getState() as RootState).teamleaders.accessToken;
     const refreshToken = (getState() as RootState).teamleaders.refreshToken;
     const response = await axios.get(`${baseURL}/${id}`, {
-      headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
+      headers: { Authorization: `Bearer ${accessToken || refreshToken}` },
     });
     return response.data;
   }
@@ -54,7 +54,7 @@ export const delTeamLeader = createAsyncThunk(
     const refreshToken = (getState() as RootState).teamleaders.refreshToken;
     const accessToken = (getState() as RootState).teamleaders.accessToken;
     const response = await axios.delete(`${baseURL}/${id}`, {
-      headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
+      headers: { Authorization: `Bearer ${accessToken || refreshToken}` },
     });
     return response.data;
   }
@@ -70,7 +70,7 @@ export const putTeamleader = createAsyncThunk(
     const accessToken = (getState() as RootState).teamleaders.accessToken;
     const response = await axios.put(`${baseURL}/${id}`, newp, {
       headers: {
-        Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}`,
+        Authorization: `Bearer ${accessToken || refreshToken}`,
         "Content-Type": "application/json",
       },
     });
@@ -85,7 +85,7 @@ export const postTeamleader = createAsyncThunk(
     const refreshToken = (getState() as RootState).teamleaders.refreshToken;
     const accessToken = (getState() as RootState).teamleaders.accessToken;
       const response = await axios.post(baseURL, newp, {
-        headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
+        headers: { Authorization: `Bearer ${accessToken || refreshToken}` },
       });
 
 

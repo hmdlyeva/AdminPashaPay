@@ -66,8 +66,8 @@ export default function SignIn() {
     dispatch(setAccTokenForTeam(accessToken));
     dispatch(setRefTokenForTeam(refreshToken));
 
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
+    // localStorage.setItem('accessToken', accessToken);
+    // localStorage.setItem('refreshToken', refreshToken);
     router.push("/dashboard");
   };
   const [username, setUserName] = useState("");

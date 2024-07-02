@@ -35,6 +35,8 @@ export function Nav({ links, isCollapsed }: NavProps) {
   const handleLogout = () => {
     dispatch(clearToken());
     dispatch(clearTokenFromTeam());
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     router.push("/");
   };
   return (
@@ -43,7 +45,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
         data-collapsed={isCollapsed}
         className="group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2"
       >
-        <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
+        <nav className="grid gap-1 pr-4 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
           {links.map((link, index) =>
             link.title === "Log Out" ? (
               isCollapsed ? (
@@ -56,7 +58,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
                           variant: link.href === pathName ? "default" : "ghost",
                           size: "icon",
                         }),
-                        "h-9 w-9",
+                        "h-9 w-9 p-0",
                         link.variant === "default" &&
                           "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
                       )}

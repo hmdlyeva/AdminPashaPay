@@ -22,10 +22,11 @@ import VolunteerImageDialog from "@/components/VolunteerImageDialog";
 type Props = {};
 
 export default function VolunteerPage({}: Props) {
-  
   const { toast } = useToast();
   const [selectedId, setSelectedId] = useState<number>(0);
-  const [selectedIdForImage, setSelectedIdForImage] = useState<number | null>(null);
+  const [selectedIdForImage, setSelectedIdForImage] = useState<number | null>(
+    null
+  );
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const volunteersData = useSelector(
     (state: RootState) => state.volunteers.volunteers
@@ -94,6 +95,8 @@ export default function VolunteerPage({}: Props) {
       accessorKey: "name",
       header: "User",
       cell: ({ row }) => {
+        // const profileImage: string = row.getValue("profileImage");
+        // console.log("profileImage", profileImage);
         return (
           <div className="flex gap-2 items-center">
             <Avatar>
@@ -108,7 +111,7 @@ export default function VolunteerPage({}: Props) {
               />
             </Avatar>
             <p className="text-ellipsis overflow-hidden">
-              {row.getValue("name")}
+              {row?.getValue("name")}
             </p>
           </div>
         );
@@ -118,6 +121,10 @@ export default function VolunteerPage({}: Props) {
       accessorKey: "surname",
       header: "Surname",
     },
+    // {
+    //   accessorKey: "profileImage",
+    //   header: "Surname",
+    // },
     // createdAt lazimdi
     // {
     //   accessorKey: "createdAt",
@@ -154,7 +161,12 @@ export default function VolunteerPage({}: Props) {
         //   className="bg-transparent hover:bg-transparent"
         //   onClick={() => handleEditClick(row.original.id)}
         // >
-          <PutDataSheet allData={updatedData} setAllData={setVolunteersData} pageName="volunteer" id={row.original.id} />
+        <PutDataSheet
+          allData={updatedData}
+          setAllData={setVolunteersData}
+          pageName="volunteer"
+          id={row.original.id}
+        />
         // </Button>
       ),
     },
@@ -177,8 +189,13 @@ export default function VolunteerPage({}: Props) {
     <div className="flex flex-col gap-5 w-full">
       <PageTitle title="Volunteers" />
       <DataTable columns={columns} data={updatedData} pageName="volunteer" />
-      {selectedIdForImage && <VolunteerImageDialog id={selectedIdForImage}  isOpen={isDialogOpen}
-          onClose={() => setIsDialogOpen(false)}/>}
+      {selectedIdForImage && (
+        <VolunteerImageDialog
+          id={selectedIdForImage}
+          isOpen={isDialogOpen}
+          onClose={() => setIsDialogOpen(false)}
+        />
+      )}
     </div>
   );
 }

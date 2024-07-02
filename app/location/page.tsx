@@ -14,6 +14,7 @@ import {
   Location,
   delLocData,
   getLocData,
+  locationImgs,
 } from "@/redux/slice/locations/locations";
 import { AppDispatch } from "../../redux/store/store";
 import PutDataSheet from "@/components/PutDataSheet";
@@ -77,13 +78,14 @@ export default function LocationPage({}: Props) {
       accessorKey: "district",
       header: "District",
       cell: ({ row }) => {
+        const market:string = row.getValue("market");
+        console.log("market:", typeof market)
+        const locationImg = locationImgs.find((img) => img.market === market.toLocaleLowerCase());
         return (
           <div className="flex gap-2 items-center">
             <img
-              className="h-10 w-10"
-              src={`https://api.dicebear.com/8.x/thumbs/svg?seed=${row.getValue(
-                "district"
-              )}`}
+              className="h-10 w-10 object-cover"
+              src={locationImg ? locationImg.img : ""}
               alt="location-image"
             />
             <p className="text-ellipsis overflow-hidden">
@@ -141,7 +143,12 @@ export default function LocationPage({}: Props) {
         //   className="bg-transparent hover:bg-transparent"
         //   onClick={() => handleEditClick(row.original.id)}
         // >
-        <PutDataSheet allData={allData} setAllData={setAllData} pageName="location" id={row.original.id} />
+        <PutDataSheet
+          allData={allData}
+          setAllData={setAllData}
+          pageName="location"
+          id={row.original.id}
+        />
         // </Button>
       ),
     },

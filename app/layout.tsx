@@ -27,7 +27,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     (state: RootState) => state.volunteers.refreshToken
   );
   const dispatch = useDispatch();
-
+  const storedAccessToken = localStorage.getItem("accessToken");
+  const storedRefreshToken = localStorage.getItem("refreshToken");
 
   const [AccessTkn, setAccessTkn] = useState<string | null>(null);
   const [RefTkn, setRefTkn] = useState<string | null>(null);
@@ -37,19 +38,21 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     setRefTkn(refreshToken);
   }, [accessToken, refreshToken, dispatch]);
 
-
   useEffect(() => {
-    if (RefTkn) {
+    if (RefTkn || storedAccessToken) {
       const intervalId = setInterval(async () => {
         try {
           const response = await axios.post(
             "https://45.95.214.69:8080/api/v1/auth/refresh-token",
-            { refreshToken: RefTkn }
+            { refreshToken: RefTkn || storedRefreshToken }
           );
           const newAccessToken = response.data.accessToken;
           const newRefreshToken = response.data.refreshToken;
           dispatch(setAccToken(newAccessToken));
           dispatch(setRefToken(newRefreshToken));
+
+          localStorage.setItem("accessToken", newAccessToken);
+          localStorage.setItem("refreshToken", newRefreshToken);
 
           dispatch(setAccTokenForTeam(newAccessToken));
           dispatch(setRefTokenForTeam(newRefreshToken));
@@ -69,9 +72,9 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         inter.className
       )}
     >
-      {AccessTkn || RefTkn ? <SideNavbar /> : null}
+      {AccessTkn || RefTkn || storedAccessToken ? <SideNavbar /> : null}
       <div className="p-8 w-full">
-        {AccessTkn || RefTkn ? (
+        {AccessTkn || RefTkn || storedAccessToken ? (
           children
         ) : (
           <div className="flex justify-center items-center w-full h-full">

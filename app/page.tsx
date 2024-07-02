@@ -9,8 +9,8 @@ export default function Home() {
     (state: RootState) => state.volunteers.accessToken
   );
 
-
-  if (accessToken) {
+  const storedAccessToken = localStorage.getItem("accessToken");
+  if (accessToken || storedAccessToken) {
     return <Dashboard />;
   }
 

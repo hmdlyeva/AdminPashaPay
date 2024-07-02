@@ -2,6 +2,29 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 
+export const locationImgs = [
+  {
+    market: "bravo",
+    img: "/assets/location/bravo.jpg",
+  },
+  {
+    market: "bolmart",
+    img: "../../assets/location/bolmart.png",
+  },
+  {
+    market: "grandmart",
+    img: "../../assets/location/grandmart.png",
+  },
+  {
+    market: "oba",
+    img: "../../assets/location/oba.png",
+  },
+  {
+    market: "rahat",
+    img: "../../assets/location/rahat.svg",
+  },
+];
+
 const baseURL = "https://45.95.214.69:8080/api/v1/location";
 
 export const getLocData = createAsyncThunk("locations/getLocData", async () => {
@@ -142,10 +165,13 @@ export const locationSlice = createSlice({
       .addCase(putLocData.pending, (state) => {
         state.loading = true;
       })
-      .addCase(putLocData.fulfilled, (state, action: PayloadAction<Location>) => {
-        state.location = action.payload;
-        state.loading = false;
-      })
+      .addCase(
+        putLocData.fulfilled,
+        (state, action: PayloadAction<Location>) => {
+          state.location = action.payload;
+          state.loading = false;
+        }
+      )
       .addCase(putLocData.rejected, (state) => {
         state.loading = false;
       });

@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { Volunteer } from "../volunteers/volunteers";
 
 const baseURL = "https://45.95.214.69:8080/api/v1/admin/team-leader";
+const accessTokenim = localStorage.getItem("accessToken");
 
 export const getTeamLeader = createAsyncThunk(
   "teamleaders/getTeamLeader",
@@ -15,23 +16,23 @@ export const getTeamLeader = createAsyncThunk(
     const accessToken = (getState() as RootState).teamleaders.accessToken;
     const refreshToken = (getState() as RootState).teamleaders.refreshToken;
     const response = await axios.get(baseURL, {
-      headers: { Authorization: `Bearer ${accessToken || refreshToken}` },
+      headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
     });
     return response.data;
   }
 );
 
 export const getTeamLeaderVolunteers = createAsyncThunk(
-    "teamleaders/getTeamLeaderVolunteers",
-    async (id: number, { getState }) => {
-      const accessToken = (getState() as RootState).teamleaders.accessToken;
-      const refreshToken = (getState() as RootState).teamleaders.refreshToken;
-      const response = await axios.get(`${baseURL}/volunteers/${id}`, {
-        headers: { Authorization: `Bearer ${accessToken || refreshToken}` },
-      });
-      return response.data;
-    }
-  );
+  "teamleaders/getTeamLeaderVolunteers",
+  async (id: number, { getState }) => {
+    const accessToken = (getState() as RootState).teamleaders.accessToken;
+    const refreshToken = (getState() as RootState).teamleaders.refreshToken;
+    const response = await axios.get(`${baseURL}/volunteers/${id}`, {
+      headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
+    });
+    return response.data;
+  }
+);
 
 export const getTeamLeaderById = createAsyncThunk(
   "teamleaders/getTeamLeaderById",
@@ -39,7 +40,7 @@ export const getTeamLeaderById = createAsyncThunk(
     const accessToken = (getState() as RootState).teamleaders.accessToken;
     const refreshToken = (getState() as RootState).teamleaders.refreshToken;
     const response = await axios.get(`${baseURL}/${id}`, {
-      headers: { Authorization: `Bearer ${accessToken || refreshToken}` },
+      headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
     });
     return response.data;
   }
@@ -51,7 +52,7 @@ export const delTeamLeader = createAsyncThunk(
     const refreshToken = (getState() as RootState).teamleaders.refreshToken;
     const accessToken = (getState() as RootState).teamleaders.accessToken;
     const response = await axios.delete(`${baseURL}/${id}`, {
-      headers: { Authorization: `Bearer ${accessToken || refreshToken}` },
+      headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
     });
     return response.data;
   }
@@ -67,7 +68,7 @@ export const putTeamleader = createAsyncThunk(
     const accessToken = (getState() as RootState).teamleaders.accessToken;
     const response = await axios.put(`${baseURL}/${id}`, newp, {
       headers: {
-        Authorization: `Bearer ${accessToken || refreshToken}`,
+        Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}`,
         "Content-Type": "application/json",
       },
     });
@@ -79,12 +80,11 @@ export const postTeamleader = createAsyncThunk(
   "teamleaders/postTeamleader",
   async (newp: Partial<Teamleader>, { rejectWithValue, getState }) => {
     try {
-    const refreshToken = (getState() as RootState).teamleaders.refreshToken;
-    const accessToken = (getState() as RootState).teamleaders.accessToken;
+      const refreshToken = (getState() as RootState).teamleaders.refreshToken;
+      const accessToken = (getState() as RootState).teamleaders.accessToken;
       const response = await axios.post(baseURL, newp, {
-        headers: { Authorization: `Bearer ${accessToken || refreshToken}` },
+        headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
       });
-
 
       return response.data;
     } catch (error) {
@@ -136,11 +136,11 @@ const initialState: TeamleaderState = {
     //   enabled:true
     // },
   },
-  teamleadervolunter:{
+  teamleadervolunter: {
     id: 0,
     name: "",
     surname: "",
-    username:"",
+    username: "",
     password: "",
     createdAt: "",
     finCode: "",
@@ -151,7 +151,8 @@ const initialState: TeamleaderState = {
     university: "",
     address: "",
     formStatus: true,
-    teamLeaderId:0,
+    teamLeaderId: 0,
+    profileImage: "",
     // userId: 0,
     // user: {
     //   accountNonLocked: true,
@@ -170,7 +171,8 @@ export const teamleaderSlice = createSlice({
   reducers: {
     setAccTokenForTeam(state, action) {
       state.accessToken = action.payload;
-    },setRefTokenForTeam(state, action) {
+    },
+    setRefTokenForTeam(state, action) {
       state.refreshToken = action.payload;
     },
     clearTokenFromTeam(state) {
@@ -194,8 +196,7 @@ export const teamleaderSlice = createSlice({
         state.loading = false;
       });
 
-
-      builder
+    builder
       .addCase(getTeamLeaderVolunteers.pending, (state) => {
         state.loading = true;
       })
@@ -274,6 +275,7 @@ export const teamleaderSlice = createSlice({
   },
 });
 
-export const { setAccTokenForTeam,setRefTokenForTeam, clearTokenFromTeam } = teamleaderSlice.actions;
+export const { setAccTokenForTeam, setRefTokenForTeam, clearTokenFromTeam } =
+  teamleaderSlice.actions;
 
 export default teamleaderSlice.reducer;

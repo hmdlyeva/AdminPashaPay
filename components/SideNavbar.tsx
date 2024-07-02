@@ -11,9 +11,9 @@ import {
   ChevronLeft,
   LogIn,
   UserRound,
-  AlarmClockCheck
+  AlarmClockCheck,
 } from "lucide-react";
-import { clearToken } from "@/redux/slice/volunteers/volunteers"; 
+import { clearToken } from "@/redux/slice/volunteers/volunteers";
 import { clearTokenFromTeam } from "@/redux/slice/teamleader/teamleaders";
 import { Button } from "./ui/button";
 import { useWindowWidth } from "@react-hook/window-size";
@@ -33,12 +33,13 @@ export default function SideNavbar({}: Props) {
   const handleLogout = () => {
     dispatch(clearToken());
     dispatch(clearTokenFromTeam());
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     router.push("/login");
   };
 
   return (
-    <div
-      className="relative min-w-[80px] border-r px-3 pb-10 pt-24">
+    <div className="relative min-w-[80px] border-r px-3 pb-10 pt-24">
       {!mobileWidth && (
         <div className="absolute right-[-20px] top-7">
           <Button

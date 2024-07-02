@@ -86,11 +86,14 @@ const formSchema = z.object({
   dateOfResignation: z.string({
     required_error: "A date of birth is required.",
   }),
+  profileImage: z.string({
+    required_error: "Profile Image is required.",
+  }),
 });
 
 export function VolunteerForm() {
   const { toast } = useToast();
-
+  const [imageSrc, setImageSrc] = useState<string | any>(null);
   const dispatch = useDispatch<AppDispatch>();
 
   const teamLeadersData = useSelector(
@@ -128,6 +131,7 @@ export function VolunteerForm() {
       dateOfEmployment: new Date(),
       dateOfResignation: "",
       teamLeaderId: 0,
+      profileImage: "",
     },
   });
 
@@ -138,6 +142,7 @@ export function VolunteerForm() {
       dateOfBirth: format(data.dateOfBirth, "yyyy-MM-dd"),
       dateOfEmployment: format(data.dateOfEmployment, "yyyy-MM-dd"),
       dateOfResignation: "",
+      profileImage: imageSrc,
     };
 
     dispatch(
@@ -155,11 +160,45 @@ export function VolunteerForm() {
       action: <ToastAction altText="Creating">Creating</ToastAction>,
     });
   }
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        setImageSrc(reader.result as string);
+      };
+    }
+  };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="grid grid-cols-2 gap-3 transition-all">
+          <FormField
+            name="profileImage"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Profile Image</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                  />
+                </FormControl>
+                {imageSrc && (
+                  <img
+                    src={imageSrc}
+                    alt="Preview"
+                    className="mt-2 h-20 rounded-md shadow-sm"
+                  />
+                )}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="name"
@@ -326,7 +365,9 @@ export function VolunteerForm() {
             render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel className="">Team Leader</FormLabel>
-                <Select  onValueChange={(value) => field.onChange(Number(value))}>
+                <Select
+                  onValueChange={(value) => field.onChange(Number(value))}
+                >
                   <SelectTrigger className="">
                     <SelectValue placeholder="Team Leader" />
                   </SelectTrigger>
@@ -334,7 +375,10 @@ export function VolunteerForm() {
                     {updatedTeamData &&
                       Array.isArray(updatedTeamData) &&
                       updatedTeamData.map((teamleader) => (
-                        <SelectItem  key={teamleader.id} value={String(teamleader.id)}>
+                        <SelectItem
+                          key={teamleader.id}
+                          value={String(teamleader.id)}
+                        >
                           {teamleader.name}
                         </SelectItem>
                       ))}

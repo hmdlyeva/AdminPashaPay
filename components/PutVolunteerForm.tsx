@@ -33,7 +33,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 
 import { Input } from "@/components/ui/input";
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store/store";
 import {
@@ -44,7 +44,7 @@ import {
 type Props = {
   datam: Volunteer | any;
   idim?: number | any;
-  setAllData: React.Dispatch<React.SetStateAction<Volunteer[]>>
+  setAllData: React.Dispatch<React.SetStateAction<Volunteer[]>>;
   allData: Volunteer[];
 };
 const formSchema = z.object({
@@ -85,10 +85,10 @@ const formSchema = z.object({
 
 export function PutVolunteerForm({ datam, idim, setAllData, allData }: Props) {
   const { toast } = useToast();
-
+  const [imageSrc, setImageSrc] = useState<string | any>(null);
 
   const dispatch = useDispatch<AppDispatch>();
-
+console.log("datam put volunter:", datam)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -107,12 +107,13 @@ export function PutVolunteerForm({ datam, idim, setAllData, allData }: Props) {
   function onSubmit(data: z.infer<typeof formSchema>) {
     const formattedData = {
       ...data,
-      teamLeaderId:datam.teamLeaderId,
+      teamLeaderId: datam.teamLeaderId,
       password: datam.password,
       dateOfBirth: format(data.dateOfBirth, "yyyy-MM-dd"),
       dateOfEmployment: format(data.dateOfEmployment, "yyyy-MM-dd"),
       dateOfResignation: format(data.dateOfResignation, "yyyy-MM-dd"),
       formStatus: datam.formStatus,
+      profileImage: imageSrc,
     };
     dispatch(
       putData({
@@ -127,10 +128,44 @@ export function PutVolunteerForm({ datam, idim, setAllData, allData }: Props) {
     });
   }
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        setImageSrc(reader.result as string);
+      };
+    }
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="grid grid-cols-2 gap-3 transition-all">
+          <FormField
+            name="profileImage"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Profile Image</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                  />
+                </FormControl>
+                {imageSrc && (
+                  <img
+                    src={imageSrc}
+                    alt="Preview"
+                    className="mt-2 h-20 rounded-md shadow-sm"
+                  />
+                )}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="name"

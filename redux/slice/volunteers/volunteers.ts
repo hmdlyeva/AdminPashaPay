@@ -7,13 +7,15 @@ import { useEffect } from "react";
 
 const baseURL = "https://45.95.214.69:8080/api/v1/admin/volunteer";
 
+const accessTokenim = localStorage.getItem("accessToken");
+
 export const getData = createAsyncThunk(
   "volunteers/getData",
   async (_, { getState }) => {
     const accessToken = (getState() as RootState).volunteers.accessToken;
     const refreshToken = (getState() as RootState).volunteers.refreshToken;
     const response = await axios.get(baseURL, {
-      headers: { Authorization: `Bearer ${accessToken || refreshToken}` },
+      headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
     });
     return response.data;
   }
@@ -26,7 +28,7 @@ export const getDataById = createAsyncThunk(
     const refreshToken = (getState() as RootState).volunteers.refreshToken;
 
     const response = await axios.get(`${baseURL}/${id}`, {
-      headers: { Authorization: `Bearer ${accessToken || refreshToken}` },
+      headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
     });
     return response.data;
   }
@@ -39,7 +41,7 @@ export const delData = createAsyncThunk(
     const refreshToken = (getState() as RootState).volunteers.refreshToken;
 
     const response = await axios.delete(`${baseURL}/${id}`, {
-      headers: { Authorization: `Bearer ${accessToken || refreshToken}` },
+      headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
     });
     return response.data;
   }
@@ -56,7 +58,7 @@ export const putData = createAsyncThunk(
 
     const response = await axios.put(`${baseURL}/${id}`, newp, {
       headers: {
-        Authorization: `Bearer ${accessToken || refreshToken}`,
+        Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}`,
         "Content-Type": "application/json",
       },
     });
@@ -72,7 +74,7 @@ export const postData = createAsyncThunk(
       const refreshToken = (getState() as RootState).volunteers.refreshToken;
 
       const response = await axios.post(baseURL, newp, {
-        headers: { Authorization: `Bearer ${accessToken || refreshToken}` },
+        headers: { Authorization: `Bearer ${accessToken || refreshToken || accessTokenim}` },
       });
 
       return response.data;
@@ -111,7 +113,7 @@ export interface Volunteer {
   address: string;
   formStatus: boolean;
   teamLeaderId: number;
-
+  profileImage: string;
   createdAt: string;
   // userId: number;
   // user?: User;
@@ -142,6 +144,7 @@ const initialState: VolunteerState = {
     address: "",
     formStatus: true,
     teamLeaderId: 0,
+    profileImage: "",
     // userId: 0,
     // user: {
     //   accountNonLocked: true,

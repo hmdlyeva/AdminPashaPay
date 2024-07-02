@@ -24,6 +24,10 @@ import {
   setAccTokenForTeam,
   setRefTokenForTeam,
 } from "@/redux/slice/teamleader/teamleaders";
+import {
+  setAccTokenRezv,
+  setRefTokenRezv,
+} from "@/redux/slice/reservation/reservation";
 
 export default function SignIn() {
   const dispatch = useDispatch();
@@ -34,6 +38,13 @@ export default function SignIn() {
   );
   const storedRefToken = useSelector(
     (state: RootState) => state.volunteers.refreshToken
+  );
+
+  const storedAccTokenRezv = useSelector(
+    (state: RootState) => state.reservations.accessToken
+  );
+  const storedRefTokenRezv = useSelector(
+    (state: RootState) => state.reservations.refreshToken
   );
 
   const storedAccTokenForTeam = useSelector(
@@ -48,10 +59,15 @@ export default function SignIn() {
       storedAccToken &&
       storedAccTokenForTeam &&
       storedRefToken &&
-      storedRefTokenForTeam
+      storedRefTokenForTeam &&
+      storedAccTokenRezv &&
+      storedRefTokenRezv
     ) {
       dispatch(setAccToken(storedAccToken));
       dispatch(setRefToken(storedRefToken));
+
+      dispatch(setAccTokenRezv(storedAccTokenRezv));
+      dispatch(setRefTokenRezv(storedRefTokenRezv));
 
       dispatch(setAccTokenForTeam(storedAccTokenForTeam));
       dispatch(setRefTokenForTeam(storedRefTokenForTeam));
@@ -62,12 +78,15 @@ export default function SignIn() {
   const handleSignIn = (accessToken: string, refreshToken: string) => {
     dispatch(setAccToken(accessToken));
     dispatch(setRefToken(refreshToken));
-    
+
+    dispatch(setAccTokenRezv(accessToken));
+    dispatch(setRefTokenRezv(refreshToken));
+
     dispatch(setAccTokenForTeam(accessToken));
     dispatch(setRefTokenForTeam(refreshToken));
 
-    // localStorage.setItem('accessToken', accessToken);
-    // localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
     router.push("/dashboard");
   };
   const [username, setUserName] = useState("");
@@ -84,6 +103,7 @@ export default function SignIn() {
         const accessToken = signInResponse.data.accessToken;
         const refreshToken = signInResponse.data.refreshToken;
         handleSignIn(accessToken, refreshToken);
+
       } catch (error) {
         console.error("Sign in error:", error);
         alert(`Failed to sign in`);
@@ -92,7 +112,6 @@ export default function SignIn() {
       alert("Incorrect username or password");
     }
   };
-
 
   return (
     <form onSubmit={handleSubmit}>

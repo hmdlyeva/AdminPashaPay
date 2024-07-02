@@ -3,10 +3,10 @@ import { LucideIcon, TrendingDown, TrendingUp } from "lucide-react";
 import React from "react";
 
 export type CardProps = {
-  label: string;
+  label?: string;
   icon: LucideIcon;
-  amount: string;
-  description: string;
+  amount?: string;
+  description?: string;
 };
 
 export default function Card(props: CardProps) {
